@@ -12,7 +12,7 @@ public class ResultSetMaper {
             if(model instanceof Topic){
                 Topic topic = (Topic) model;
                 topic.setId(result.getInt("topic_id"));
-                topic.setTopic_name(result.getString("topic_name"));
+                topic.setName(result.getString("topic_name"));
                 topic.setdeleted(result.getBoolean("topic_deleted"));
                 topic.setCreated_at(result.getTimestamp("created_at"));
                 topic.setUpdated_at(result.getTimestamp("updated_at"));

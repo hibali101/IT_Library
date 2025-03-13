@@ -9,7 +9,7 @@ public interface IService<Model,IDType> {
     Model add(Model model) throws FieldRequiredException, FieldUniqueException;
     ArrayList<Model> getAll();
     Model getById(IDType id);
-    Model update(Model model) throws FieldRequiredException, FieldUniqueException;
+    Model update(Model model) throws FieldUniqueException;
     /* Model delete(Model model); */
 
 }

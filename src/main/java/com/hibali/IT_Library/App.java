@@ -20,14 +20,16 @@ public class App {
             service.add(new Topic("Very good sir!"));
             service.add(new Topic("data science!")); */
             Topic topic = new Topic();
-            topic.setId(1);
-            topic.setTopic_name("whsar");
+            topic.setId(2);
+            topic.setName("dzeer");
             service.update(topic);
-        }catch(FieldRequiredException | FieldUniqueException e){
+        }catch(FieldUniqueException e){
             System.out.println(e);
         }
-
+        Topic topic = service.getById(6);
+        System.out.println("*********");
+        System.out.println(topic.toString());
         List<Topic> topics = service.getAll(); 
-        topics.forEach(top -> System.out.println(top.getId()+" "+top.getTopic_name() + " updated at : "+top.updated_at));
+        topics.forEach(top -> System.out.println(top.getId()+" "+top.getName() + " updated at : "+top.updated_at));
     }
 }

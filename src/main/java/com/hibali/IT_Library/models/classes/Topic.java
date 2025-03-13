@@ -4,29 +4,29 @@ import java.sql.Timestamp;
 
 public class Topic extends BaseModel {
     private int id;
-    private String topic_name;
+    private String name;
 
     public Topic() {
         super();
     }
     public Topic(String name) {
-        topic_name = name;
+        this.name = name;
     }
-    public Topic(int id, String topic_name, boolean deleted, Timestamp created_at,
+    public Topic(int id, String name, boolean deleted, Timestamp created_at,
             Timestamp updated_at) {
         super(deleted, created_at, updated_at);
         this.id = id;
-        this.topic_name = topic_name;
+        this.name = name;
     }
 
     public int getId() {
         return id;
     }
-    public String getTopic_name() {
-        return topic_name;
+    public String getName() {
+        return name;
     }
-    public void setTopic_name(String topic_name) {
-        this.topic_name = topic_name;
+    public void setName(String name) {
+        this.name = name;
     }
     public void setId(int id){
         this.id = id;
@@ -34,8 +34,8 @@ public class Topic extends BaseModel {
 
     @Override
     public String toString() {
-        return "Topic [id=" + id + ", topic_deleted=" + deleted + ", topic_name=" + topic_name + ", created_at="
-                + created_at + ", updated_at=" + updated_at + ", getTopic_name()=" + getTopic_name() + "]";
+        return "Topic [id=" + id + ", topic_deleted=" + deleted + ", name=" + name + ", created_at="
+                + created_at + ", updated_at=" + updated_at + "]";
     }
 
 }
