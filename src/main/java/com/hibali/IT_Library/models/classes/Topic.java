@@ -6,7 +6,7 @@ public class Topic extends BaseModel {
     private int id;
     private String name;
 
-    public Topic() {
+    public Topic() { 
         super();
     }
     public Topic(String name) {

@@ -7,9 +7,9 @@ import com.hibali.IT_Library.customExceptions.FieldUniqueException;
 
 public interface IService<Model,IDType> {
     Model add(Model model) throws FieldRequiredException, FieldUniqueException;
-    ArrayList<Model> getAll();
+    /* ArrayList<Model> getAll();
     Model getById(IDType id);
-    Model update(Model model) throws FieldUniqueException;
-    /* Model delete(Model model); */
+    Model update(Model model) throws FieldUniqueException, FieldRequiredException;
+    Model delete(Model model) throws FieldRequiredException; */
 
 }

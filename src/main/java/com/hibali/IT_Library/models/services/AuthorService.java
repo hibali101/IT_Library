@@ -1,52 +1,49 @@
 package com.hibali.IT_Library.models.services;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 import com.hibali.IT_Library.customExceptions.FieldRequiredException;
 import com.hibali.IT_Library.customExceptions.FieldUniqueException;
+import com.hibali.IT_Library.models.classes.Author;
 import com.hibali.IT_Library.models.classes.DbConnection;
-import com.hibali.IT_Library.models.classes.Topic;
-import com.hibali.IT_Library.utilities.ResultSetMaper;
 
-public class TopicService implements IService<Topic, Integer> {
-
+public class AuthorService implements IService<Author,Integer> {
     DbConnection dbConnection;
 
-    public TopicService(DbConnection dbConnection) {
+    public AuthorService(DbConnection dbConnection) {
         this.dbConnection = dbConnection;
     }
 
-    public Topic add(Topic topic) throws FieldRequiredException, FieldUniqueException {
-        if (topic.getName() != null) {
+    public Author add(Author author) throws FieldRequiredException, FieldUniqueException {
+        if (author.getName() != null) {
             try (Connection cnx = dbConnection.create()) {
                 cnx.setAutoCommit(false);
-                String query = "insert into topics (topic_name) values (?)";
+                String query = "insert into authors (author_name, author_link) values (?,?)";
                 try (PreparedStatement ps = cnx.prepareStatement(query)) {
-                    ps.setString(1, topic.getName());
+                    ps.setString(1, author.getName());
+                    ps.setString(2, author.getLink());
                     ps.executeUpdate();
                     cnx.commit();
-                    System.out.println(topic.toString() + " inserted successefully");
-                    return topic;
+                    System.out.println(author.toString() + " inserted successefully");
+                    return author;
                 } catch (SQLException e) {
                     cnx.rollback();
                     System.out.println(e);
                 }
             } catch (SQLException ex) {
                 if (ex.getMessage().contains("UNIQUE")) {
-                    throw new FieldUniqueException("topic_name");
+                    throw new FieldUniqueException("author_name");
                 }
             }
         } else {
-            throw new FieldRequiredException("topic_name");
+            throw new FieldRequiredException("author_name");
         }
         return null;
     }
 
-    public ArrayList<Topic> getAll() {
+    /* public ArrayList<Topic> getAll() {
         ArrayList<Topic> topics = new ArrayList<>();
         try (Connection cnx = dbConnection.create()) {
             String query = "select * from topics where topic_deleted = 0";
@@ -121,5 +118,5 @@ public class TopicService implements IService<Topic, Integer> {
             System.out.println(e.getMessage());
         }
         return null;
-    }
+    } */
 }
