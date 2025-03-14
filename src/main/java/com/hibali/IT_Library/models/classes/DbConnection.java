@@ -17,8 +17,7 @@ public class DbConnection {
 
     private DbConnection() {
         //path to the enviroment .env file
-        Path path = Path.of("./").resolve(".env").toAbsolutePath();
-        System.out.println(path);
+        Path path = Path.of("./").resolve(".env").normalize().toAbsolutePath();
         try (FileReader fr = new FileReader(path.toString())) {
             Properties prop = new Properties();
             prop.load(fr);

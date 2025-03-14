@@ -36,12 +36,12 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
                     return progsLanguage;
                 } catch (SQLException e) {
                     cnx.rollback();
+                    if (e.getMessage().contains("UNIQUE")) {
+                        throw new FieldUniqueException("progsLanguage");
+                    }
                     System.out.println(e.getMessage());
                 }
             } catch (Exception e) {
-                if (e.getMessage().contains("UNIQUE")) {
-                    throw new FieldUniqueException("progsLanguage");
-                }
                 System.out.println(e.getMessage());
             }
         }
@@ -98,12 +98,12 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
                 return programmingLanguage;
             } catch (SQLException e) {
                 cnx.rollback();
+                if (e.getMessage().contains("UNIQUE")) {
+                    throw new FieldUniqueException("prog_lang_name");
+                }
                 System.out.println(e);
             }
         } catch (SQLException ex) {
-            if (ex.getMessage().contains("UNIQUE")) {
-                throw new FieldUniqueException("prog_lang_name");
-            }
             System.out.println(ex.getMessage());
         }
         return null;

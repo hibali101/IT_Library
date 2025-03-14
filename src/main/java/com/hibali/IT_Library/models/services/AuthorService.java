@@ -33,12 +33,12 @@ public class AuthorService implements IService<Author,Integer> {
                     return author;
                 } catch (SQLException e) {
                     cnx.rollback();
+                    if (e.getMessage().contains("UNIQUE")) {
+                        throw new FieldUniqueException("author_name");
+                    }
                     System.out.println(e);
                 }
             } catch (SQLException ex) {
-                if (ex.getMessage().contains("UNIQUE")) {
-                    throw new FieldUniqueException("author_name");
-                }
                 System.out.println(ex.getMessage());
             }
         } else {
@@ -65,7 +65,7 @@ public class AuthorService implements IService<Author,Integer> {
     public Author getById(Integer id) {
         Author author = null;
         try (Connection cnx = this.dbConnection.create()) {
-            PreparedStatement ps = cnx.prepareStatement("select * from authors where author_id=? and topic_deleted = 0");
+            PreparedStatement ps = cnx.prepareStatement("select * from authors where author_id=? and author_deleted = 0");
             ps.setInt(1, id);
             ResultSet result = ps.executeQuery();
             while (result.next()) {
@@ -94,12 +94,12 @@ public class AuthorService implements IService<Author,Integer> {
                 return author;
             } catch (SQLException e) {
                 cnx.rollback();
+                if (e.getMessage().contains("UNIQUE")) {
+                    throw new FieldUniqueException("name must be unique");
+                }
                 System.out.println(e);
             }
         } catch (SQLException ex) {
-            if (ex.getMessage().contains("UNIQUE")) {
-                throw new FieldUniqueException("name must be unique");
-            }
             System.out.println(ex.getMessage());
         }
         return null;

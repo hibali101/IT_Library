@@ -33,12 +33,12 @@ public class TopicService implements IService<Topic, Integer> {
                     return topic;
                 } catch (SQLException e) {
                     cnx.rollback();
+                    if (e.getMessage().contains("UNIQUE")) {
+                        throw new FieldUniqueException("topic_name");
+                    }
                     System.out.println(e);
                 }
             } catch (SQLException ex) {
-                if (ex.getMessage().contains("UNIQUE")) {
-                    throw new FieldUniqueException("topic_name");
-                }
                 System.out.println(ex.getMessage());
             }
         } else {
@@ -93,12 +93,12 @@ public class TopicService implements IService<Topic, Integer> {
                 return topic;
             } catch (SQLException e) {
                 cnx.rollback();
+                if (e.getMessage().contains("UNIQUE")) {
+                    throw new FieldUniqueException("name must be unique");
+                }
                 System.out.println(e);
             }
         } catch (SQLException ex) {
-            if (ex.getMessage().contains("UNIQUE")) {
-                throw new FieldUniqueException("name must be unique");
-            }
             System.out.println(ex.getMessage());
         }
         return null;
