@@ -2,12 +2,15 @@ package com.hibali.IT_Library.models.services;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import com.hibali.IT_Library.customExceptions.FieldRequiredException;
 import com.hibali.IT_Library.customExceptions.FieldUniqueException;
 import com.hibali.IT_Library.models.classes.Author;
 import com.hibali.IT_Library.models.classes.DbConnection;
+import com.hibali.IT_Library.utilities.ResultSetMaper;
 
 public class AuthorService implements IService<Author,Integer> {
     DbConnection dbConnection;
@@ -36,6 +39,7 @@ public class AuthorService implements IService<Author,Integer> {
                 if (ex.getMessage().contains("UNIQUE")) {
                     throw new FieldUniqueException("author_name");
                 }
+                System.out.println(ex.getMessage());
             }
         } else {
             throw new FieldRequiredException("author_name");
@@ -43,50 +47,51 @@ public class AuthorService implements IService<Author,Integer> {
         return null;
     }
 
-    /* public ArrayList<Topic> getAll() {
-        ArrayList<Topic> topics = new ArrayList<>();
+    public ArrayList<Author> getAll() {
+        ArrayList<Author> authors = new ArrayList<>();
         try (Connection cnx = dbConnection.create()) {
-            String query = "select * from topics where topic_deleted = 0";
+            String query = "select * from authors where author_deleted = 0";
             PreparedStatement ps = cnx.prepareStatement(query);
             ResultSet result = ps.executeQuery();
             while (result.next()) {
-                topics.add(ResultSetMaper.mapToModel(result, Topic.class));
+                authors.add(ResultSetMaper.mapToModel(result, Author.class));
             }
         } catch (SQLException ex) {
             System.out.println(ex);
         }
-        return topics;
+        return authors;
     }
 
-    public Topic getById(Integer id) {
-        Topic topic = null;
+    public Author getById(Integer id) {
+        Author author = null;
         try (Connection cnx = this.dbConnection.create()) {
-            PreparedStatement ps = cnx.prepareStatement("select * from topics where topic_id=? and topic_deleted = 0");
+            PreparedStatement ps = cnx.prepareStatement("select * from authors where author_id=? and topic_deleted = 0");
             ps.setInt(1, id);
             ResultSet result = ps.executeQuery();
             while (result.next()) {
-                topic = ResultSetMaper.mapToModel(result, Topic.class);
+                author = ResultSetMaper.mapToModel(result, Author.class);
             }
         } catch (SQLException ex) {
             System.out.println(ex);
         }
-        return topic;
+        return author;
     }
 
-    public Topic update(Topic topic) throws FieldUniqueException, FieldRequiredException {
-        if(topic.getId() <= 0){
-            throw new FieldRequiredException("topic_id");
+    public Author update(Author author) throws FieldUniqueException, FieldRequiredException {
+        if(author.getId() <= 0){
+            throw new FieldRequiredException("author_id");
         }
         try (Connection cnx = dbConnection.create()) {
             cnx.setAutoCommit(false);
-            String query = "update topics set topic_name = ?, updated_at = GETDATE() where topics.topic_id = ?";
+            String query = "update authors set author_name = ?, author_link = ?, updated_at = GETDATE() where authors.author_id = ?";
             try (PreparedStatement ps = cnx.prepareStatement(query)) {
-                ps.setString(1, topic.getName());
-                ps.setInt(2, topic.getId());
+                ps.setString(1, author.getName());
+                ps.setString(2, author.getLink());
+                ps.setInt(3, author.getId());
                 ps.executeUpdate();
                 cnx.commit();
-                System.out.println(topic.toString() + " updated successefully");
-                return topic;
+                System.out.println(author.toString() + " updated successefully");
+                return author;
             } catch (SQLException e) {
                 cnx.rollback();
                 System.out.println(e);
@@ -95,21 +100,22 @@ public class AuthorService implements IService<Author,Integer> {
             if (ex.getMessage().contains("UNIQUE")) {
                 throw new FieldUniqueException("name must be unique");
             }
+            System.out.println(ex.getMessage());
         }
         return null;
     }
-    public Topic delete(Topic topic) throws FieldRequiredException{
-        if(topic.getId() <= 0){
-            throw new FieldRequiredException("topic_id");
+    public Author delete(Author author) throws FieldRequiredException{
+        if(author.getId() <= 0){
+            throw new FieldRequiredException("author_id");
         }
         try(Connection cnx = dbConnection.create()){
             cnx.setAutoCommit(false);
-            try(PreparedStatement ps = cnx.prepareStatement("update topics set topic_deleted = 1 where topic_id = ?")){
-                ps.setInt(1, topic.getId());
+            try(PreparedStatement ps = cnx.prepareStatement("update authors set author_deleted = 1 where author_id = ?")){
+                ps.setInt(1, author.getId());
                 ps.executeUpdate();
                 cnx.commit();
-                System.out.println(topic.getName() + " deleted successfully");
-                return topic;
+                System.out.println(author.getName() + " deleted successfully");
+                return author;
             }catch(SQLException ex){
                 cnx.rollback();
                 System.out.println(ex.getMessage());
@@ -118,5 +124,5 @@ public class AuthorService implements IService<Author,Integer> {
             System.out.println(e.getMessage());
         }
         return null;
-    } */
+    }
 }

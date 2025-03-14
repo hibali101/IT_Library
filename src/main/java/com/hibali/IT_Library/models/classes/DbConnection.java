@@ -2,6 +2,7 @@ package com.hibali.IT_Library.models.classes;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -15,7 +16,10 @@ public class DbConnection {
     private String password;
 
     private DbConnection() {
-        try (FileReader fr = new FileReader("C:\\Users\\21263\\Desktop\\hibali\\IT_Library\\.env")) {
+        //path to the enviroment .env file
+        Path path = Path.of("./").resolve(".env").toAbsolutePath();
+        System.out.println(path);
+        try (FileReader fr = new FileReader(path.toString())) {
             Properties prop = new Properties();
             prop.load(fr);
             this.connextionString = prop.getProperty("CON_URL");

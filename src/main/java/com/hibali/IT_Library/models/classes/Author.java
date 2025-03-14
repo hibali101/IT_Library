@@ -9,6 +9,9 @@ public class Author extends BaseModel {
     public Author(){
         super();
     }
+    public Author(String name){
+        this.name = name;
+    }
     public Author(String name,String link){
         this.name = name;
         this.link = link;

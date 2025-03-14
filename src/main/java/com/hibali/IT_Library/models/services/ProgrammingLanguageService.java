@@ -42,6 +42,7 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
                 if (e.getMessage().contains("UNIQUE")) {
                     throw new FieldUniqueException("progsLanguage");
                 }
+                System.out.println(e.getMessage());
             }
         }
         return null;
@@ -103,6 +104,7 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
             if (ex.getMessage().contains("UNIQUE")) {
                 throw new FieldUniqueException("prog_lang_name");
             }
+            System.out.println(ex.getMessage());
         }
         return null;
     }

@@ -39,6 +39,7 @@ public class TopicService implements IService<Topic, Integer> {
                 if (ex.getMessage().contains("UNIQUE")) {
                     throw new FieldUniqueException("topic_name");
                 }
+                System.out.println(ex.getMessage());
             }
         } else {
             throw new FieldRequiredException("topic_name");
@@ -98,6 +99,7 @@ public class TopicService implements IService<Topic, Integer> {
             if (ex.getMessage().contains("UNIQUE")) {
                 throw new FieldUniqueException("name must be unique");
             }
+            System.out.println(ex.getMessage());
         }
         return null;
     }
