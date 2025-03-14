@@ -15,7 +15,7 @@ public class DbConnection {
     private String password;
 
     private DbConnection() {
-        try (FileReader fr = new FileReader("C:\\hibali_programming\\projectLibrary\\backend\\IT_Library\\.env")) {
+        try (FileReader fr = new FileReader("C:\\Users\\21263\\Desktop\\hibali\\IT_Library\\.env")) {
             Properties prop = new Properties();
             prop.load(fr);
             this.connextionString = prop.getProperty("CON_URL");
