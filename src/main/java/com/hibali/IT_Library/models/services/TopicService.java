@@ -14,7 +14,7 @@ import com.hibali.IT_Library.utilities.ResultSetMaper;
 
 public class TopicService implements IService<Topic, Integer> {
 
-    DbConnection dbConnection;
+    private final DbConnection dbConnection;
 
     public TopicService(DbConnection dbConnection) {
         this.dbConnection = dbConnection;
@@ -49,10 +49,10 @@ public class TopicService implements IService<Topic, Integer> {
 
     public ArrayList<Topic> getAll() {
         ArrayList<Topic> topics = new ArrayList<>();
-        try (Connection cnx = dbConnection.create()) {
-            String query = "select * from topics where topic_deleted = 0";
-            PreparedStatement ps = cnx.prepareStatement(query);
-            ResultSet result = ps.executeQuery();
+        String query = "select * from topics where topic_deleted = 0";
+        try (Connection cnx = dbConnection.create();
+                PreparedStatement ps = cnx.prepareStatement(query);
+                ResultSet result = ps.executeQuery()) {
             while (result.next()) {
                 topics.add(ResultSetMaper.mapToModel(result, Topic.class));
             }
@@ -64,12 +64,14 @@ public class TopicService implements IService<Topic, Integer> {
 
     public Topic getById(Integer id) {
         Topic topic = null;
-        try (Connection cnx = this.dbConnection.create()) {
-            PreparedStatement ps = cnx.prepareStatement("select * from topics where topic_id=? and topic_deleted = 0");
+        try (Connection cnx = this.dbConnection.create();
+                PreparedStatement ps = cnx
+                        .prepareStatement("select * from topics where topic_id=? and topic_deleted = 0")) {
             ps.setInt(1, id);
-            ResultSet result = ps.executeQuery();
-            while (result.next()) {
-                topic = ResultSetMaper.mapToModel(result, Topic.class);
+            try (ResultSet result = ps.executeQuery()) {
+                while (result.next()) {
+                    topic = ResultSetMaper.mapToModel(result, Topic.class);
+                }
             }
         } catch (SQLException ex) {
             System.out.println(ex);
@@ -78,7 +80,7 @@ public class TopicService implements IService<Topic, Integer> {
     }
 
     public Topic update(Topic topic) throws FieldUniqueException, FieldRequiredException {
-        if(topic.getId() <= 0){
+        if (topic.getId() <= 0) {
             throw new FieldRequiredException("topic_id");
         }
         try (Connection cnx = dbConnection.create()) {
@@ -103,23 +105,25 @@ public class TopicService implements IService<Topic, Integer> {
         }
         return null;
     }
-    public Topic delete(Topic topic) throws FieldRequiredException{
-        if(topic.getId() <= 0){
+
+    public Topic delete(Topic topic) throws FieldRequiredException {
+        if (topic.getId() <= 0) {
             throw new FieldRequiredException("topic_id");
         }
-        try(Connection cnx = dbConnection.create()){
+        try (Connection cnx = dbConnection.create()) {
             cnx.setAutoCommit(false);
-            try(PreparedStatement ps = cnx.prepareStatement("update topics set topic_deleted = 1 where topic_id = ?")){
+            try (PreparedStatement ps = cnx
+                    .prepareStatement("update topics set topic_deleted = 1 where topic_id = ?")) {
                 ps.setInt(1, topic.getId());
                 ps.executeUpdate();
                 cnx.commit();
                 System.out.println(topic.getName() + " deleted successfully");
                 return topic;
-            }catch(SQLException ex){
+            } catch (SQLException ex) {
                 cnx.rollback();
                 System.out.println(ex.getMessage());
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return null;

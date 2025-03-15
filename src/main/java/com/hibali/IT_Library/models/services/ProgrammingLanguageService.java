@@ -14,7 +14,7 @@ import com.hibali.IT_Library.utilities.ResultSetMaper;
 
 public class ProgrammingLanguageService implements IService<ProgrammingLanguage, Integer> {
 
-    DbConnection connexion;
+    private final DbConnection connexion;
 
     public ProgrammingLanguageService(DbConnection cnx) {
         this.connexion = cnx;
@@ -22,7 +22,8 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
 
     // adding new programming language
     @Override
-    public ProgrammingLanguage add(ProgrammingLanguage progsLanguage) throws FieldRequiredException, FieldUniqueException {
+    public ProgrammingLanguage add(ProgrammingLanguage progsLanguage)
+            throws FieldRequiredException, FieldUniqueException {
         if (progsLanguage.getName() == null) {
             throw new FieldRequiredException("progsLanguage");
         } else {
@@ -51,12 +52,12 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
     /// get all programming language
     public ArrayList<ProgrammingLanguage> getAll() {
         ArrayList<ProgrammingLanguage> programmingLanguage = new ArrayList<>();
-        try (Connection cnx = connexion.create()) {
-            String query = "select * from prog_langs where prog_lang_deleted = 0";
-            PreparedStatement ps = cnx.prepareStatement(query);
-            ResultSet result = ps.executeQuery();
-            while (result.next()) {
-                programmingLanguage.add(ResultSetMaper.mapToModel(result, ProgrammingLanguage.class));
+        String query = "select * from prog_langs where prog_lang_deleted = 0";
+        try (Connection cnx = connexion.create(); PreparedStatement ps = cnx.prepareStatement(query)) {
+            try(ResultSet result = ps.executeQuery()){
+                while (result.next()) {
+                    programmingLanguage.add(ResultSetMaper.mapToModel(result, ProgrammingLanguage.class));
+                }
             }
         } catch (SQLException ex) {
             System.out.println(ex);
@@ -68,12 +69,14 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
 
     public ProgrammingLanguage getById(Integer id) {
         ProgrammingLanguage programmingLanguage = null;
-        try (Connection cnx = this.connexion.create()) {
-            PreparedStatement ps = cnx.prepareStatement("select * from prog_langs where prog_lang_id=? and prog_lang_deleted = 0");
+        try (Connection cnx = this.connexion.create();
+                PreparedStatement ps = cnx
+                        .prepareStatement("select * from prog_langs where prog_lang_id=? and prog_lang_deleted = 0")) {
             ps.setInt(1, id);
-            ResultSet result = ps.executeQuery();
-            while (result.next()) {
-                programmingLanguage = ResultSetMaper.mapToModel(result, ProgrammingLanguage.class);
+            try(ResultSet result = ps.executeQuery()){
+                while (result.next()) {
+                    programmingLanguage = ResultSetMaper.mapToModel(result, ProgrammingLanguage.class);
+                }
             }
         } catch (SQLException ex) {
             System.out.println(ex);
@@ -81,8 +84,9 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
         return programmingLanguage;
     }
 
-    /// upate a programming language 
-    public ProgrammingLanguage update(ProgrammingLanguage programmingLanguage) throws FieldUniqueException, FieldRequiredException {
+    /// upate a programming language
+    public ProgrammingLanguage update(ProgrammingLanguage programmingLanguage)
+            throws FieldUniqueException, FieldRequiredException {
         if (programmingLanguage.getId() <= 0) {
             throw new FieldRequiredException("prog_lang_id");
         }
@@ -109,14 +113,15 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
         return null;
     }
 
-    //delete a programming language
+    // delete a programming language
     public ProgrammingLanguage delete(ProgrammingLanguage programmingLanguage) throws FieldRequiredException {
         if (programmingLanguage.getId() <= 0) {
             throw new FieldRequiredException("prog_lang_id");
         }
         try (Connection cnx = connexion.create()) {
             cnx.setAutoCommit(false);
-            try (PreparedStatement ps = cnx.prepareStatement("update prog_langs set prog_lang_deleted = 1 where prog_lang_id = ?")) {
+            try (PreparedStatement ps = cnx
+                    .prepareStatement("update prog_langs set prog_lang_deleted = 1 where prog_lang_id = ?")) {
                 ps.setInt(1, programmingLanguage.getId());
                 ps.executeUpdate();
                 cnx.commit();

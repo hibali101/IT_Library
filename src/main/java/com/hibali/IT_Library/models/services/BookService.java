@@ -9,8 +9,8 @@ import com.hibali.IT_Library.customExceptions.FieldUniqueException;
 import com.hibali.IT_Library.models.classes.Book;
 import com.hibali.IT_Library.models.classes.DbConnection;
 
-public class BookService implements IService<Book, Integer> {
-    DbConnection dbConnection;
+public class BookService {
+    private final DbConnection dbConnection;
 
     public BookService(DbConnection dbConnection) {
         this.dbConnection = dbConnection;
@@ -51,5 +51,4 @@ public class BookService implements IService<Book, Integer> {
         return null;
     }
 
-    
 }

@@ -12,8 +12,8 @@ import com.hibali.IT_Library.models.classes.Author;
 import com.hibali.IT_Library.models.classes.DbConnection;
 import com.hibali.IT_Library.utilities.ResultSetMaper;
 
-public class AuthorService implements IService<Author,Integer> {
-    DbConnection dbConnection;
+public class AuthorService implements IService<Author, Integer> {
+    private final DbConnection dbConnection;
 
     public AuthorService(DbConnection dbConnection) {
         this.dbConnection = dbConnection;
@@ -49,12 +49,12 @@ public class AuthorService implements IService<Author,Integer> {
 
     public ArrayList<Author> getAll() {
         ArrayList<Author> authors = new ArrayList<>();
-        try (Connection cnx = dbConnection.create()) {
-            String query = "select * from authors where author_deleted = 0";
-            PreparedStatement ps = cnx.prepareStatement(query);
-            ResultSet result = ps.executeQuery();
-            while (result.next()) {
-                authors.add(ResultSetMaper.mapToModel(result, Author.class));
+        String query = "select * from authors where author_deleted = 0";
+        try (Connection cnx = dbConnection.create(); PreparedStatement ps = cnx.prepareStatement(query)) {
+            try(ResultSet result = ps.executeQuery()){
+                while (result.next()) {
+                    authors.add(ResultSetMaper.mapToModel(result, Author.class));
+                }
             }
         } catch (SQLException ex) {
             System.out.println(ex);
@@ -65,11 +65,13 @@ public class AuthorService implements IService<Author,Integer> {
     public Author getById(Integer id) {
         Author author = null;
         try (Connection cnx = this.dbConnection.create()) {
-            PreparedStatement ps = cnx.prepareStatement("select * from authors where author_id=? and author_deleted = 0");
+            PreparedStatement ps = cnx
+                    .prepareStatement("select * from authors where author_id=? and author_deleted = 0");
             ps.setInt(1, id);
-            ResultSet result = ps.executeQuery();
-            while (result.next()) {
-                author = ResultSetMaper.mapToModel(result, Author.class);
+            try(ResultSet result = ps.executeQuery()){
+                while (result.next()) {
+                    author = ResultSetMaper.mapToModel(result, Author.class);
+                }
             }
         } catch (SQLException ex) {
             System.out.println(ex);
@@ -78,7 +80,7 @@ public class AuthorService implements IService<Author,Integer> {
     }
 
     public Author update(Author author) throws FieldUniqueException, FieldRequiredException {
-        if(author.getId() <= 0){
+        if (author.getId() <= 0) {
             throw new FieldRequiredException("author_id");
         }
         try (Connection cnx = dbConnection.create()) {
@@ -104,23 +106,25 @@ public class AuthorService implements IService<Author,Integer> {
         }
         return null;
     }
-    public Author delete(Author author) throws FieldRequiredException{
-        if(author.getId() <= 0){
+
+    public Author delete(Author author) throws FieldRequiredException {
+        if (author.getId() <= 0) {
             throw new FieldRequiredException("author_id");
         }
-        try(Connection cnx = dbConnection.create()){
+        try (Connection cnx = dbConnection.create()) {
             cnx.setAutoCommit(false);
-            try(PreparedStatement ps = cnx.prepareStatement("update authors set author_deleted = 1 where author_id = ?")){
+            try (PreparedStatement ps = cnx
+                    .prepareStatement("update authors set author_deleted = 1 where author_id = ?")) {
                 ps.setInt(1, author.getId());
                 ps.executeUpdate();
                 cnx.commit();
                 System.out.println(author.getName() + " deleted successfully");
                 return author;
-            }catch(SQLException ex){
+            } catch (SQLException ex) {
                 cnx.rollback();
                 System.out.println(ex.getMessage());
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return null;
