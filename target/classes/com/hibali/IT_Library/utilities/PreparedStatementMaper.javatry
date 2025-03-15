@@ -1,0 +1,19 @@
+package com.hibali.IT_Library.utilities;
+
+import java.sql.PreparedStatement;
+
+import com.hibali.IT_Library.models.classes.Book;
+
+public class PreparedStatementMaper {
+    public static <T> PreparedStatement mapToPreparedStatement(PreparedStatement ps, T model){
+        
+        try{
+            if(model instanceof Book){
+                Book book = (Book) model;
+                ps.se
+            }
+        }catch(Exception ex){
+            System.out.println(ex.getMessage());
+        }
+    }
+}
