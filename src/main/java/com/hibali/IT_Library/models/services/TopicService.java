@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import com.hibali.IT_Library.customExceptions.FieldRequiredException;
 import com.hibali.IT_Library.customExceptions.FieldUniqueException;
+import com.hibali.IT_Library.models.Dao.TopicDao;
 import com.hibali.IT_Library.models.classes.DbConnection;
 import com.hibali.IT_Library.models.classes.Topic;
 import com.hibali.IT_Library.utilities.ResultSetMaper;
@@ -15,19 +16,19 @@ import com.hibali.IT_Library.utilities.ResultSetMaper;
 public class TopicService implements IService<Topic, Integer> {
 
     private final DbConnection dbConnection;
+    private final TopicDao topicDao;
 
     public TopicService(DbConnection dbConnection) {
         this.dbConnection = dbConnection;
+        this.topicDao = new TopicDao();
     }
 
     public Topic add(Topic topic) throws FieldRequiredException, FieldUniqueException {
         if (topic.getName() != null) {
             try (Connection cnx = dbConnection.create()) {
                 cnx.setAutoCommit(false);
-                String query = "insert into topics (topic_name) values (?)";
-                try (PreparedStatement ps = cnx.prepareStatement(query)) {
-                    ps.setString(1, topic.getName());
-                    ps.executeUpdate();
+                try {
+                    topicDao.insert(topic, cnx);
                     cnx.commit();
                     System.out.println(topic.toString() + " inserted successefully");
                     return topic;
@@ -48,35 +49,21 @@ public class TopicService implements IService<Topic, Integer> {
     }
 
     public ArrayList<Topic> getAll() {
-        ArrayList<Topic> topics = new ArrayList<>();
-        String query = "select * from topics where topic_deleted = 0";
-        try (Connection cnx = dbConnection.create();
-                PreparedStatement ps = cnx.prepareStatement(query);
-                ResultSet result = ps.executeQuery()) {
-            while (result.next()) {
-                topics.add(ResultSetMaper.mapToModel(result, Topic.class));
-            }
+        try (Connection cnx = dbConnection.create()) {
+            return topicDao.findAll(cnx);
         } catch (SQLException ex) {
             System.out.println(ex);
         }
-        return topics;
+        return new ArrayList<>();
     }
 
     public Topic getById(Integer id) {
-        Topic topic = null;
-        try (Connection cnx = this.dbConnection.create();
-                PreparedStatement ps = cnx
-                        .prepareStatement("select * from topics where topic_id=? and topic_deleted = 0")) {
-            ps.setInt(1, id);
-            try (ResultSet result = ps.executeQuery()) {
-                while (result.next()) {
-                    topic = ResultSetMaper.mapToModel(result, Topic.class);
-                }
-            }
+        try (Connection cnx = this.dbConnection.create()) {
+            return topicDao.findById(id, cnx);
         } catch (SQLException ex) {
             System.out.println(ex);
         }
-        return topic;
+        return null;
     }
 
     public Topic update(Topic topic) throws FieldUniqueException, FieldRequiredException {
@@ -85,18 +72,15 @@ public class TopicService implements IService<Topic, Integer> {
         }
         try (Connection cnx = dbConnection.create()) {
             cnx.setAutoCommit(false);
-            String query = "update topics set topic_name = ?, updated_at = GETDATE() where topics.topic_id = ?";
-            try (PreparedStatement ps = cnx.prepareStatement(query)) {
-                ps.setString(1, topic.getName());
-                ps.setInt(2, topic.getId());
-                ps.executeUpdate();
+            try{
+                topicDao.update(topic, cnx);
                 cnx.commit();
                 System.out.println(topic.toString() + " updated successefully");
                 return topic;
             } catch (SQLException e) {
                 cnx.rollback();
                 if (e.getMessage().contains("UNIQUE")) {
-                    throw new FieldUniqueException("name must be unique");
+                    throw new FieldUniqueException("topic_name");
                 }
                 System.out.println(e);
             }
@@ -112,10 +96,8 @@ public class TopicService implements IService<Topic, Integer> {
         }
         try (Connection cnx = dbConnection.create()) {
             cnx.setAutoCommit(false);
-            try (PreparedStatement ps = cnx
-                    .prepareStatement("update topics set topic_deleted = 1 where topic_id = ?")) {
-                ps.setInt(1, topic.getId());
-                ps.executeUpdate();
+            try {
+                topicDao.delete(topic, cnx);
                 cnx.commit();
                 System.out.println(topic.getName() + " deleted successfully");
                 return topic;

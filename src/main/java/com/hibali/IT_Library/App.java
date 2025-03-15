@@ -11,9 +11,11 @@ import com.hibali.IT_Library.models.classes.Author;
 import com.hibali.IT_Library.models.classes.Book;
 import com.hibali.IT_Library.models.classes.DbConnection;
 import com.hibali.IT_Library.models.classes.ProgrammingLanguage;
+import com.hibali.IT_Library.models.classes.Topic;
 import com.hibali.IT_Library.models.services.AuthorService;
 import com.hibali.IT_Library.models.services.BookService;
 import com.hibali.IT_Library.models.services.ProgrammingLanguageService;
+import com.hibali.IT_Library.models.services.TopicService;
 
 /**
  * Hello world!
@@ -23,15 +25,26 @@ public class App {
     public static void main(String[] args) {
         DbConnection dbConnection = DbConnection.getDbConnection();
 
-        // books
-        BookService bookService = new BookService(dbConnection);
-        Book book = new Book(1, "Song of ice and fire", Date.valueOf("2093-03-14"), "good book", BookLanguages.ENGLISH,
-                "files/books/EZCddzz.pdf", 1, BookStatus.ACCEPTED);
-        try{
-            bookService.add(book);
-        }catch(FieldRequiredException | FieldUniqueException e){
-            System.out.println(e);
+        TopicService service = new TopicService(dbConnection);
+        Topic topic = new Topic("tanajom");
+        try {
+            service.add(topic);
+        } catch (FieldRequiredException | FieldUniqueException e) {
+            e.printStackTrace();
         }
+
+        // books
+        /*
+         * BookService bookService = new BookService(dbConnection);
+         * Book book = new Book(1, "Song of ice and fire", Date.valueOf("2093-03-14"),
+         * "good book", BookLanguages.ENGLISH,
+         * "files/books/EZCddzz.pdf", 1, BookStatus.ACCEPTED);
+         * try{
+         * bookService.add(book);
+         * }catch(FieldRequiredException | FieldUniqueException e){
+         * System.out.println(e);
+         * }
+         */
 
         // authors
         // AuthorService service = new AuthorService(dbConnection);
