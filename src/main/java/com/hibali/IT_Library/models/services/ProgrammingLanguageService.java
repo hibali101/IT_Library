@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import com.hibali.IT_Library.customExceptions.FieldRequiredException;
 import com.hibali.IT_Library.customExceptions.FieldUniqueException;
+import com.hibali.IT_Library.models.Dao.ProgrammingLanguageDao;
 import com.hibali.IT_Library.models.classes.DbConnection;
 import com.hibali.IT_Library.models.classes.ProgrammingLanguage;
 import com.hibali.IT_Library.utilities.ResultSetMaper;
@@ -15,9 +16,11 @@ import com.hibali.IT_Library.utilities.ResultSetMaper;
 public class ProgrammingLanguageService implements IService<ProgrammingLanguage, Integer> {
 
     private final DbConnection connexion;
+    private final ProgrammingLanguageDao dao;
 
     public ProgrammingLanguageService(DbConnection cnx) {
         this.connexion = cnx;
+        this.dao = new ProgrammingLanguageDao();
     }
 
     // adding new programming language
@@ -29,16 +32,14 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
         } else {
             try (Connection cnx = connexion.create()) {
                 cnx.setAutoCommit(false);
-                String query = "insert into prog_langs (prog_lang_name) values(?)";
-                try (PreparedStatement ps = cnx.prepareStatement(query)) {
-                    ps.setString(1, progsLanguage.getName());
-                    ps.executeUpdate();
+                try {
+                    dao.insert(progsLanguage, cnx);
                     cnx.commit();
                     return progsLanguage;
                 } catch (SQLException e) {
                     cnx.rollback();
                     if (e.getMessage().contains("UNIQUE")) {
-                        throw new FieldUniqueException("progsLanguage");
+                        throw new FieldUniqueException("prog_lang_name");
                     }
                     System.out.println(e.getMessage());
                 }
@@ -51,33 +52,20 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
 
     /// get all programming language
     public ArrayList<ProgrammingLanguage> getAll() {
-        ArrayList<ProgrammingLanguage> programmingLanguage = new ArrayList<>();
-        String query = "select * from prog_langs where prog_lang_deleted = 0";
-        try (Connection cnx = connexion.create(); PreparedStatement ps = cnx.prepareStatement(query)) {
-            try(ResultSet result = ps.executeQuery()){
-                while (result.next()) {
-                    programmingLanguage.add(ResultSetMaper.mapToModel(result, ProgrammingLanguage.class));
-                }
-            }
+        try (Connection cnx = connexion.create()) {
+            dao.findAll(cnx);
         } catch (SQLException ex) {
             System.out.println(ex);
         }
-        return programmingLanguage;
+        return new ArrayList<>();
     }
 
     /// get by id a programming language
 
     public ProgrammingLanguage getById(Integer id) {
         ProgrammingLanguage programmingLanguage = null;
-        try (Connection cnx = this.connexion.create();
-                PreparedStatement ps = cnx
-                        .prepareStatement("select * from prog_langs where prog_lang_id=? and prog_lang_deleted = 0")) {
-            ps.setInt(1, id);
-            try(ResultSet result = ps.executeQuery()){
-                while (result.next()) {
-                    programmingLanguage = ResultSetMaper.mapToModel(result, ProgrammingLanguage.class);
-                }
-            }
+        try (Connection cnx = this.connexion.create()) {
+            dao.findById(id, cnx);
         } catch (SQLException ex) {
             System.out.println(ex);
         }
@@ -92,11 +80,8 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
         }
         try (Connection cnx = connexion.create()) {
             cnx.setAutoCommit(false);
-            String query = "update prog_langs set prog_lang_name = ?, updated_at = GETDATE() where prog_lang_id = ?";
-            try (PreparedStatement ps = cnx.prepareStatement(query)) {
-                ps.setString(1, programmingLanguage.getName());
-                ps.setInt(2, programmingLanguage.getId());
-                ps.executeUpdate();
+            try {
+                dao.update(programmingLanguage, cnx);
                 cnx.commit();
                 System.out.println(programmingLanguage.toString() + " updated successefully");
                 return programmingLanguage;
@@ -120,10 +105,8 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
         }
         try (Connection cnx = connexion.create()) {
             cnx.setAutoCommit(false);
-            try (PreparedStatement ps = cnx
-                    .prepareStatement("update prog_langs set prog_lang_deleted = 1 where prog_lang_id = ?")) {
-                ps.setInt(1, programmingLanguage.getId());
-                ps.executeUpdate();
+            try {
+                dao.delete(programmingLanguage, cnx);
                 cnx.commit();
                 System.out.println(programmingLanguage.getName() + " deleted successfully");
                 return programmingLanguage;

@@ -25,28 +25,29 @@ public class App {
     public static void main(String[] args) {
         DbConnection dbConnection = DbConnection.getDbConnection();
 
-        TopicService service = new TopicService(dbConnection);
-        Topic topic = new Topic();
-        topic.setId(2);
-        try {
-            service.delete(topic);
-        } catch (FieldRequiredException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        // books
         /*
-         * BookService bookService = new BookService(dbConnection);
-         * Book book = new Book(1, "Song of ice and fire", Date.valueOf("2093-03-14"),
-         * "good book", BookLanguages.ENGLISH,
-         * "files/books/EZCddzz.pdf", 1, BookStatus.ACCEPTED);
-         * try{
-         * bookService.add(book);
-         * }catch(FieldRequiredException | FieldUniqueException e){
-         * System.out.println(e);
+         * TopicService service = new TopicService(dbConnection);
+         * Topic topic = new Topic();
+         * topic.setId(2);
+         * try {
+         * service.delete(topic);
+         * } catch (FieldRequiredException e) {
+         * // TODO Auto-generated catch block
+         * e.printStackTrace();
          * }
          */
+
+        // books
+
+        BookService bookService = new BookService(dbConnection);
+        Book book = new Book(1, "Song dick", Date.valueOf("1990-03-14"),
+                "grat book hahaha", BookLanguages.ENGLISH,
+                "files/books/hayahy.pdf", 1, BookStatus.ACCEPTED);
+        try {
+            bookService.add(book);
+        } catch (FieldRequiredException | FieldUniqueException e) {
+            System.out.println(e);
+        }
 
         // authors
         // AuthorService service = new AuthorService(dbConnection);

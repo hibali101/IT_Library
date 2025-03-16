@@ -6,14 +6,16 @@ import java.sql.SQLException;
 
 import com.hibali.IT_Library.customExceptions.FieldRequiredException;
 import com.hibali.IT_Library.customExceptions.FieldUniqueException;
+import com.hibali.IT_Library.models.Dao.BookDao;
 import com.hibali.IT_Library.models.classes.Book;
 import com.hibali.IT_Library.models.classes.DbConnection;
 
 public class BookService {
     private final DbConnection dbConnection;
-
+    private final BookDao dao;
     public BookService(DbConnection dbConnection) {
         this.dbConnection = dbConnection;
+        this.dao = new BookDao();
     }
 
     public Book add(Book book) throws FieldRequiredException, FieldUniqueException {
@@ -22,22 +24,8 @@ public class BookService {
         }
         try (Connection cnx = dbConnection.create()) {
             cnx.setAutoCommit(false);
-            //didnt insert number of downloads
-            String query = "insert into books (author_id, book_name," +
-                    "book_publish_date, book_description, book_language, "+
-                    "book_file_url, book_edition, book_status )"+
-                    " values (?,?,?,?,?,?,?,?)";
-            try(PreparedStatement ps = cnx.prepareStatement(query)){
-                ps.setInt(1, book.getAuthorId());
-                ps.setString(2, book.getName());
-                ps.setDate(3, book.getPublishDate());
-                ps.setString(4, book.getDescription());
-                ps.setString(5, book.getBookLanguage().toString().toLowerCase());
-                ps.setString(6, book.getFileUrI());
-                ps.setInt(7, book.getEdition());
-                ps.setString(8, book.getStatus().toString().toLowerCase());
-
-                ps.executeUpdate();
+            try{
+                dao.insert(book, cnx);
                 cnx.commit();
                 System.out.println(book + " inserted successfully");
                 return book;
