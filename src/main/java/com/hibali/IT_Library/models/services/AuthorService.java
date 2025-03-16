@@ -8,26 +8,26 @@ import java.util.ArrayList;
 
 import com.hibali.IT_Library.customExceptions.FieldRequiredException;
 import com.hibali.IT_Library.customExceptions.FieldUniqueException;
+import com.hibali.IT_Library.models.Dao.AuthorDao;
 import com.hibali.IT_Library.models.classes.Author;
 import com.hibali.IT_Library.models.classes.DbConnection;
 import com.hibali.IT_Library.utilities.ResultSetMaper;
 
 public class AuthorService implements IService<Author, Integer> {
     private final DbConnection dbConnection;
+    private final AuthorDao authorDao;
 
     public AuthorService(DbConnection dbConnection) {
         this.dbConnection = dbConnection;
+        this.authorDao = new AuthorDao();
     }
 
     public Author add(Author author) throws FieldRequiredException, FieldUniqueException {
         if (author.getName() != null) {
             try (Connection cnx = dbConnection.create()) {
                 cnx.setAutoCommit(false);
-                String query = "insert into authors (author_name, author_link) values (?,?)";
-                try (PreparedStatement ps = cnx.prepareStatement(query)) {
-                    ps.setString(1, author.getName());
-                    ps.setString(2, author.getLink());
-                    ps.executeUpdate();
+                try {
+                    authorDao.insert(author, cnx);
                     cnx.commit();
                     System.out.println(author.toString() + " inserted successefully");
                     return author;
@@ -48,35 +48,21 @@ public class AuthorService implements IService<Author, Integer> {
     }
 
     public ArrayList<Author> getAll() {
-        ArrayList<Author> authors = new ArrayList<>();
-        String query = "select * from authors where author_deleted = 0";
-        try (Connection cnx = dbConnection.create(); PreparedStatement ps = cnx.prepareStatement(query)) {
-            try(ResultSet result = ps.executeQuery()){
-                while (result.next()) {
-                    authors.add(ResultSetMaper.mapToModel(result, Author.class));
-                }
-            }
+        try (Connection cnx = dbConnection.create()) {
+            return authorDao.findAll(cnx);
         } catch (SQLException ex) {
             System.out.println(ex);
         }
-        return authors;
+        return new ArrayList<>();
     }
 
     public Author getById(Integer id) {
-        Author author = null;
         try (Connection cnx = this.dbConnection.create()) {
-            PreparedStatement ps = cnx
-                    .prepareStatement("select * from authors where author_id=? and author_deleted = 0");
-            ps.setInt(1, id);
-            try(ResultSet result = ps.executeQuery()){
-                while (result.next()) {
-                    author = ResultSetMaper.mapToModel(result, Author.class);
-                }
-            }
+            return authorDao.findById(id, cnx);
         } catch (SQLException ex) {
             System.out.println(ex);
         }
-        return author;
+        return null;
     }
 
     public Author update(Author author) throws FieldUniqueException, FieldRequiredException {
@@ -85,19 +71,15 @@ public class AuthorService implements IService<Author, Integer> {
         }
         try (Connection cnx = dbConnection.create()) {
             cnx.setAutoCommit(false);
-            String query = "update authors set author_name = ?, author_link = ?, updated_at = GETDATE() where authors.author_id = ?";
-            try (PreparedStatement ps = cnx.prepareStatement(query)) {
-                ps.setString(1, author.getName());
-                ps.setString(2, author.getLink());
-                ps.setInt(3, author.getId());
-                ps.executeUpdate();
+            try{
+                authorDao.update(author, cnx);
                 cnx.commit();
                 System.out.println(author.toString() + " updated successefully");
                 return author;
             } catch (SQLException e) {
                 cnx.rollback();
                 if (e.getMessage().contains("UNIQUE")) {
-                    throw new FieldUniqueException("name must be unique");
+                    throw new FieldUniqueException("topic_name");
                 }
                 System.out.println(e);
             }
@@ -113,10 +95,8 @@ public class AuthorService implements IService<Author, Integer> {
         }
         try (Connection cnx = dbConnection.create()) {
             cnx.setAutoCommit(false);
-            try (PreparedStatement ps = cnx
-                    .prepareStatement("update authors set author_deleted = 1 where author_id = ?")) {
-                ps.setInt(1, author.getId());
-                ps.executeUpdate();
+            try {
+                authorDao.delete(author, cnx);
                 cnx.commit();
                 System.out.println(author.getName() + " deleted successfully");
                 return author;

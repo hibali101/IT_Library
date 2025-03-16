@@ -26,10 +26,12 @@ public class App {
         DbConnection dbConnection = DbConnection.getDbConnection();
 
         TopicService service = new TopicService(dbConnection);
-        Topic topic = new Topic("tanajom");
+        Topic topic = new Topic();
+        topic.setId(2);
         try {
-            service.add(topic);
-        } catch (FieldRequiredException | FieldUniqueException e) {
+            service.delete(topic);
+        } catch (FieldRequiredException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

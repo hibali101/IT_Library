@@ -5,12 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 import com.hibali.IT_Library.models.classes.Topic;
 import com.hibali.IT_Library.utilities.ResultSetMaper;
 
-public class TopicDao {
+public class TopicDao implements IDao<Topic> {
     public void insert(Topic topic, Connection cnx) throws SQLException {
         String query = "insert into topics (topic_name) values (?)";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {

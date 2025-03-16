@@ -99,7 +99,7 @@ public class TopicService implements IService<Topic, Integer> {
             try {
                 topicDao.delete(topic, cnx);
                 cnx.commit();
-                System.out.println(topic.getName() + " deleted successfully");
+                System.out.println(topic.getId() + " deleted successfully");
                 return topic;
             } catch (SQLException ex) {
                 cnx.rollback();
