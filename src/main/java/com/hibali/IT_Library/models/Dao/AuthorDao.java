@@ -55,7 +55,6 @@ public class AuthorDao implements IDao<Author> {
             ps.setString(2, author.getLink());
             ps.setInt(3, author.getId());
             ps.executeUpdate();
-            System.out.println(author.toString() + " updated successefully");
         }
     }
 

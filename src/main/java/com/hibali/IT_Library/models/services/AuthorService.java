@@ -1,8 +1,6 @@
 package com.hibali.IT_Library.models.services;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -11,7 +9,7 @@ import com.hibali.IT_Library.customExceptions.FieldUniqueException;
 import com.hibali.IT_Library.models.Dao.AuthorDao;
 import com.hibali.IT_Library.models.classes.Author;
 import com.hibali.IT_Library.models.classes.DbConnection;
-import com.hibali.IT_Library.utilities.ResultSetMaper;
+import com.hibali.IT_Library.utilities.TransactionsResultsMessages;
 
 public class AuthorService implements IService<Author, Integer> {
     private final DbConnection dbConnection;
@@ -29,17 +27,17 @@ public class AuthorService implements IService<Author, Integer> {
                 try {
                     authorDao.insert(author, cnx);
                     cnx.commit();
-                    System.out.println(author.toString() + " inserted successefully");
+                    TransactionsResultsMessages.insertSuccess(author);
                     return author;
                 } catch (SQLException e) {
                     cnx.rollback();
                     if (e.getMessage().contains("UNIQUE")) {
                         throw new FieldUniqueException("author_name");
                     }
-                    System.out.println(e);
+                    e.printStackTrace();
                 }
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         } else {
             throw new FieldRequiredException("author_name");
@@ -50,8 +48,8 @@ public class AuthorService implements IService<Author, Integer> {
     public ArrayList<Author> getAll() {
         try (Connection cnx = dbConnection.create()) {
             return authorDao.findAll(cnx);
-        } catch (SQLException ex) {
-            System.out.println(ex);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return new ArrayList<>();
     }
@@ -59,8 +57,8 @@ public class AuthorService implements IService<Author, Integer> {
     public Author getById(Integer id) {
         try (Connection cnx = this.dbConnection.create()) {
             return authorDao.findById(id, cnx);
-        } catch (SQLException ex) {
-            System.out.println(ex);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -74,17 +72,17 @@ public class AuthorService implements IService<Author, Integer> {
             try{
                 authorDao.update(author, cnx);
                 cnx.commit();
-                System.out.println(author.toString() + " updated successefully");
+                TransactionsResultsMessages.updateSuccess(author);
                 return author;
             } catch (SQLException e) {
                 cnx.rollback();
                 if (e.getMessage().contains("UNIQUE")) {
                     throw new FieldUniqueException("topic_name");
                 }
-                System.out.println(e);
+                e.printStackTrace();
             }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -98,14 +96,14 @@ public class AuthorService implements IService<Author, Integer> {
             try {
                 authorDao.delete(author, cnx);
                 cnx.commit();
-                System.out.println(author.getName() + " deleted successfully");
+                TransactionsResultsMessages.deleteSuccess(author);
                 return author;
-            } catch (SQLException ex) {
+            } catch (SQLException e) {
                 cnx.rollback();
-                System.out.println(ex.getMessage());
+                e.printStackTrace();
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         return null;
     }

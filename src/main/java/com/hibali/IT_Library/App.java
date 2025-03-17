@@ -1,12 +1,15 @@
 package com.hibali.IT_Library;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.hibali.IT_Library.customExceptions.BuisnessRulesException;
 import com.hibali.IT_Library.customExceptions.FieldRequiredException;
 import com.hibali.IT_Library.customExceptions.FieldUniqueException;
 import com.hibali.IT_Library.enums.BookLanguages;
 import com.hibali.IT_Library.enums.BookStatus;
+import com.hibali.IT_Library.models.Dao.BookDao;
 import com.hibali.IT_Library.models.classes.Author;
 import com.hibali.IT_Library.models.classes.Book;
 import com.hibali.IT_Library.models.classes.DbConnection;
@@ -25,27 +28,28 @@ public class App {
     public static void main(String[] args) {
         DbConnection dbConnection = DbConnection.getDbConnection();
 
+        // books
         /*
-         * TopicService service = new TopicService(dbConnection);
-         * Topic topic = new Topic();
-         * topic.setId(2);
+         * BookService bkService = new BookService(dbConnection);
+         * BookDao bkDao = new BookDao();
+         */
+
+        /*
          * try {
-         * service.delete(topic);
-         * } catch (FieldRequiredException e) {
-         * // TODO Auto-generated catch block
-         * e.printStackTrace();
+         * ArrayList<Book> books = bkDao.findByName("sg", dbConnection.create());
+         * System.out.println(books.size());
+         * } catch (SQLException e) {
+         * System.out.println(e.getMessage());
          * }
          */
 
-        // books
-
         BookService bookService = new BookService(dbConnection);
-        Book book = new Book(1, "Song dick", Date.valueOf("1990-03-14"),
-                "grat book hahaha", BookLanguages.ENGLISH,
-                "files/books/hayahy.pdf", 1, BookStatus.ACCEPTED);
+        Book book = new Book(1, "ard nifa9", Date.valueOf("1984-03-14"),
+                "another great one", BookLanguages.ARAB,
+                "files/books/ard2.pdf", 2, BookStatus.PENDING);
         try {
             bookService.add(book);
-        } catch (FieldRequiredException | FieldUniqueException e) {
+        } catch (FieldRequiredException | FieldUniqueException | BuisnessRulesException e) {
             System.out.println(e);
         }
 

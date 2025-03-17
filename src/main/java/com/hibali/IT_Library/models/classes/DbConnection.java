@@ -24,9 +24,8 @@ public class DbConnection {
             this.connextionString = prop.getProperty("CON_URL");
             this.username = prop.getProperty("CON_USERNAME");
             this.password = prop.getProperty("CON_PASSWORD");
-        } catch (IOException ex) {
-            System.out.println(ex);
-            System.out.println(Arrays.toString(ex.getStackTrace()));
+        } catch (IOException e) {
+            e.printStackTrace();
             System.out.println("failed to load env file");
         }
     }
@@ -34,9 +33,9 @@ public class DbConnection {
     public Connection create() throws SQLException {
         try{
             return DriverManager.getConnection(this.connextionString, this.username, this.password);
-        }catch(SQLException ex){
-            System.out.println(ex);
-            throw ex;
+        }catch(SQLException e){
+            e.printStackTrace();
+            throw e;
         }
     }
 

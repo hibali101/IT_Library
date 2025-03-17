@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
-Test set: com.hibali.IT_Library.AppTest
+Test set: com.hibali.IT_Library.MainTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.086 s <<< FAILURE! -- in com.hibali.IT_Library.AppTest
-com.hibali.IT_Library.AppTest.addition -- Time elapsed: 0.036 s <<< FAILURE!
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.105 s <<< FAILURE! -- in com.hibali.IT_Library.MainTest
+com.hibali.IT_Library.MainTest.addition -- Time elapsed: 0.055 s <<< FAILURE!
 org.opentest4j.AssertionFailedError: expected: <9> but was: <7>
 	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
 	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
@@ -10,7 +10,7 @@ org.opentest4j.AssertionFailedError: expected: <9> but was: <7>
 	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:150)
 	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:145)
 	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:531)
-	at com.hibali.IT_Library.AppTest.addition(AppTest.java:10)
+	at com.hibali.IT_Library.MainTest.addition(MainTest.java:10)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)

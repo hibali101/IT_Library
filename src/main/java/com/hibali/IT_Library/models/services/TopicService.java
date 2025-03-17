@@ -1,7 +1,5 @@
 package com.hibali.IT_Library.models.services;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -11,7 +9,7 @@ import com.hibali.IT_Library.customExceptions.FieldUniqueException;
 import com.hibali.IT_Library.models.Dao.TopicDao;
 import com.hibali.IT_Library.models.classes.DbConnection;
 import com.hibali.IT_Library.models.classes.Topic;
-import com.hibali.IT_Library.utilities.ResultSetMaper;
+import com.hibali.IT_Library.utilities.TransactionsResultsMessages;
 
 public class TopicService implements IService<Topic, Integer> {
 
@@ -30,17 +28,17 @@ public class TopicService implements IService<Topic, Integer> {
                 try {
                     topicDao.insert(topic, cnx);
                     cnx.commit();
-                    System.out.println(topic.toString() + " inserted successefully");
+                    TransactionsResultsMessages.insertSuccess(topic);
                     return topic;
                 } catch (SQLException e) {
                     cnx.rollback();
                     if (e.getMessage().contains("UNIQUE")) {
                         throw new FieldUniqueException("topic_name");
                     }
-                    System.out.println(e);
+                    e.printStackTrace();
                 }
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
             }
         } else {
             throw new FieldRequiredException("topic_name");
@@ -51,8 +49,8 @@ public class TopicService implements IService<Topic, Integer> {
     public ArrayList<Topic> getAll() {
         try (Connection cnx = dbConnection.create()) {
             return topicDao.findAll(cnx);
-        } catch (SQLException ex) {
-            System.out.println(ex);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return new ArrayList<>();
     }
@@ -60,8 +58,8 @@ public class TopicService implements IService<Topic, Integer> {
     public Topic getById(Integer id) {
         try (Connection cnx = this.dbConnection.create()) {
             return topicDao.findById(id, cnx);
-        } catch (SQLException ex) {
-            System.out.println(ex);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -72,20 +70,20 @@ public class TopicService implements IService<Topic, Integer> {
         }
         try (Connection cnx = dbConnection.create()) {
             cnx.setAutoCommit(false);
-            try{
+            try {
                 topicDao.update(topic, cnx);
                 cnx.commit();
-                System.out.println(topic.toString() + " updated successefully");
+                TransactionsResultsMessages.updateSuccess(topic);
                 return topic;
             } catch (SQLException e) {
                 cnx.rollback();
                 if (e.getMessage().contains("UNIQUE")) {
                     throw new FieldUniqueException("topic_name");
                 }
-                System.out.println(e);
+                e.printStackTrace();
             }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
         return null;
     }
@@ -99,14 +97,14 @@ public class TopicService implements IService<Topic, Integer> {
             try {
                 topicDao.delete(topic, cnx);
                 cnx.commit();
-                System.out.println(topic.getId() + " deleted successfully");
+                TransactionsResultsMessages.deleteSuccess(topic);
                 return topic;
-            } catch (SQLException ex) {
+            } catch (SQLException e) {
                 cnx.rollback();
-                System.out.println(ex.getMessage());
+                System.out.println(e.getMessage());
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         return null;
     }

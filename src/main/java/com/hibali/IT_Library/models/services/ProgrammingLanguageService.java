@@ -1,8 +1,6 @@
 package com.hibali.IT_Library.models.services;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -11,7 +9,7 @@ import com.hibali.IT_Library.customExceptions.FieldUniqueException;
 import com.hibali.IT_Library.models.Dao.ProgrammingLanguageDao;
 import com.hibali.IT_Library.models.classes.DbConnection;
 import com.hibali.IT_Library.models.classes.ProgrammingLanguage;
-import com.hibali.IT_Library.utilities.ResultSetMaper;
+import com.hibali.IT_Library.utilities.TransactionsResultsMessages;
 
 public class ProgrammingLanguageService implements IService<ProgrammingLanguage, Integer> {
 
@@ -35,6 +33,7 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
                 try {
                     dao.insert(progsLanguage, cnx);
                     cnx.commit();
+                    TransactionsResultsMessages.insertSuccess(progsLanguage);
                     return progsLanguage;
                 } catch (SQLException e) {
                     cnx.rollback();
@@ -54,8 +53,8 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
     public ArrayList<ProgrammingLanguage> getAll() {
         try (Connection cnx = connexion.create()) {
             dao.findAll(cnx);
-        } catch (SQLException ex) {
-            System.out.println(ex);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return new ArrayList<>();
     }
@@ -66,8 +65,8 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
         ProgrammingLanguage programmingLanguage = null;
         try (Connection cnx = this.connexion.create()) {
             dao.findById(id, cnx);
-        } catch (SQLException ex) {
-            System.out.println(ex);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return programmingLanguage;
     }
@@ -83,17 +82,17 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
             try {
                 dao.update(programmingLanguage, cnx);
                 cnx.commit();
-                System.out.println(programmingLanguage.toString() + " updated successefully");
+                TransactionsResultsMessages.updateSuccess(programmingLanguage);
                 return programmingLanguage;
             } catch (SQLException e) {
                 cnx.rollback();
                 if (e.getMessage().contains("UNIQUE")) {
                     throw new FieldUniqueException("prog_lang_name");
                 }
-                System.out.println(e);
+                e.printStackTrace();
             }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
         return null;
     }
@@ -108,11 +107,11 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
             try {
                 dao.delete(programmingLanguage, cnx);
                 cnx.commit();
-                System.out.println(programmingLanguage.getName() + " deleted successfully");
+                TransactionsResultsMessages.deleteSuccess(programmingLanguage);
                 return programmingLanguage;
-            } catch (SQLException ex) {
+            } catch (SQLException e) {
                 cnx.rollback();
-                System.out.println(ex.getMessage());
+                System.out.println(e.getMessage());
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
