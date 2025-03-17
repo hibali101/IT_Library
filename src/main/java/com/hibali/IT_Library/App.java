@@ -43,13 +43,12 @@ public class App {
          * }
          */
 
-        BookService bookService = new BookService(dbConnection);
-        Book book = new Book(1, "ard nifa9", Date.valueOf("1984-03-14"),
-                "another great one", BookLanguages.ARAB,
-                "files/books/ard2.pdf", 2, BookStatus.PENDING);
+        BookService bookService = new BookService(dbConnection,new BookDao());
+        Book book = new Book();
+        book.setId(19);
         try {
-            bookService.add(book);
-        } catch (FieldRequiredException | FieldUniqueException | BuisnessRulesException e) {
+            bookService.delete(book);
+        } catch (FieldRequiredException e) {
             System.out.println(e);
         }
 

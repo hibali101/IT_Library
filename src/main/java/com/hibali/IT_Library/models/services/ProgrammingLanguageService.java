@@ -16,9 +16,9 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
     private final DbConnection connexion;
     private final ProgrammingLanguageDao dao;
 
-    public ProgrammingLanguageService(DbConnection cnx) {
+    public ProgrammingLanguageService(DbConnection cnx, ProgrammingLanguageDao dao) {
         this.connexion = cnx;
-        this.dao = new ProgrammingLanguageDao();
+        this.dao = dao;
     }
 
     // adding new programming language

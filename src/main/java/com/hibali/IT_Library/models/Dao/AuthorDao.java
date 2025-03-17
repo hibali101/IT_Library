@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import com.hibali.IT_Library.models.classes.Author;
 import com.hibali.IT_Library.utilities.ResultSetMaper;
@@ -20,7 +21,7 @@ public class AuthorDao implements IDao<Author> {
     }
 
     @Override
-    public ArrayList<Author> findAll(Connection cnx) throws SQLException {
+    public Optional<ArrayList<Author>> findAll(Connection cnx) throws SQLException {
         ArrayList<Author> authors = new ArrayList<>();
         String query = "select * from authors where author_deleted = 0";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
@@ -30,21 +31,21 @@ public class AuthorDao implements IDao<Author> {
                 }
             }
         }
-        return authors;
+        return Optional.ofNullable(authors);
     }
 
     @Override
-    public Author findById(int id, Connection cnx) throws SQLException {
+    public Optional<Author> findById(int id, Connection cnx) throws SQLException {
         String query = "select * from authors where author_id=? and author_deleted = 0";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setInt(1, id);
             try (ResultSet result = ps.executeQuery()) {
                 while (result.next()) {
-                    return ResultSetMaper.mapToModel(result, Author.class);
+                    return Optional.ofNullable(ResultSetMaper.mapToModel(result, Author.class));
                 }
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override

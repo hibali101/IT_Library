@@ -1,6 +1,8 @@
 package com.hibali.IT_Library.models.services;
 
+import java.lang.classfile.ClassFile.Option;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import com.hibali.IT_Library.customExceptions.BuisnessRulesException;
 import com.hibali.IT_Library.customExceptions.FieldRequiredException;
@@ -8,13 +10,13 @@ import com.hibali.IT_Library.customExceptions.FieldUniqueException;
 
 public interface IService<Model, IDType> {
 
-    Model add(Model model) throws FieldRequiredException, FieldUniqueException, BuisnessRulesException;
+    Optional<Model> add(Model model) throws FieldRequiredException, FieldUniqueException, BuisnessRulesException;
 
-    ArrayList<Model> getAll();
+    Optional<ArrayList<Model>> getAll();
 
-    Model getById(IDType id);
+    Optional<Model> getById(IDType id);
 
-    Model update(Model model) throws FieldUniqueException, FieldRequiredException, BuisnessRulesException;
+    Optional<Model> update(Model model) throws FieldUniqueException, FieldRequiredException, BuisnessRulesException;
 
-    Model delete(Model model) throws FieldRequiredException;
+    Optional<Model> delete(Model model) throws FieldRequiredException;
 }

@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import com.hibali.IT_Library.models.classes.ProgrammingLanguage;
 import com.hibali.IT_Library.utilities.ResultSetMaper;
@@ -21,7 +22,7 @@ public class ProgrammingLanguageDao implements IDao<ProgrammingLanguage> {
     }
 
     @Override
-    public ArrayList<ProgrammingLanguage> findAll(Connection cnx) throws SQLException {
+    public Optional<ArrayList<ProgrammingLanguage>> findAll(Connection cnx) throws SQLException {
         ArrayList<ProgrammingLanguage> programmingLanguages = new ArrayList<>();
         String query = "select * from prog_langs where prog_lang_deleted = 0";
         try (PreparedStatement ps = cnx.prepareStatement(query); ResultSet result = ps.executeQuery()) {
@@ -29,21 +30,21 @@ public class ProgrammingLanguageDao implements IDao<ProgrammingLanguage> {
                 programmingLanguages.add(ResultSetMaper.mapToModel(result, ProgrammingLanguage.class));
             }
         }
-        return programmingLanguages;
+        return Optional.ofNullable(programmingLanguages);
     }
 
     @Override
-    public ProgrammingLanguage findById(int id, Connection cnx) throws SQLException {
+    public Optional<ProgrammingLanguage> findById(int id, Connection cnx) throws SQLException {
         String query = "select * from prog_langs where prog_lang_id=? and prog_lang_deleted = 0";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setInt(1, id);
             try (ResultSet result = ps.executeQuery()) {
                 while (result.next()) {
-                    return ResultSetMaper.mapToModel(result, ProgrammingLanguage.class);
+                    return Optional.ofNullable(ResultSetMaper.mapToModel(result, ProgrammingLanguage.class));
                 }
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override

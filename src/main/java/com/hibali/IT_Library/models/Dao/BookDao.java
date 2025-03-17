@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import com.hibali.IT_Library.models.classes.Book;
 import com.hibali.IT_Library.utilities.ResultSetMaper;
@@ -32,28 +33,28 @@ public class BookDao implements IDao<Book> {
 
     }
 
-    public ArrayList<Book> findAll(Connection cnx) throws SQLException {
+    public Optional<ArrayList<Book>> findAll(Connection cnx) throws SQLException {
         String query = "select * from books where book_deleted = 0";
         try (PreparedStatement ps = cnx.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
             ArrayList<Book> books = new ArrayList<>();
             while (rs.next()) {
                 books.add(ResultSetMaper.mapToModel(rs, Book.class));
             }
-            return books;
+            return Optional.ofNullable(books);
         }
     }
 
-    public Book findById(int id, Connection cnx) throws SQLException {
+    public Optional<Book> findById(int id, Connection cnx) throws SQLException {
         String query = "select * from books where book_id=? and book_deleted=0";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    return ResultSetMaper.mapToModel(rs, Book.class);
+                    return Optional.ofNullable(ResultSetMaper.mapToModel(rs, Book.class));
                 }
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     public void update(Book book, Connection cnx) throws SQLException {

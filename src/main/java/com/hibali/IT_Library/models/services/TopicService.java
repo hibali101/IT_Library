@@ -16,9 +16,9 @@ public class TopicService implements IService<Topic, Integer> {
     private final DbConnection dbConnection;
     private final TopicDao topicDao;
 
-    public TopicService(DbConnection dbConnection) {
+    public TopicService(DbConnection dbConnection, TopicDao dao) {
         this.dbConnection = dbConnection;
-        this.topicDao = new TopicDao();
+        this.topicDao = dao;
     }
 
     public Topic add(Topic topic) throws FieldRequiredException, FieldUniqueException {

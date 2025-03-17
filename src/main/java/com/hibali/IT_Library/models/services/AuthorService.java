@@ -15,9 +15,9 @@ public class AuthorService implements IService<Author, Integer> {
     private final DbConnection dbConnection;
     private final AuthorDao authorDao;
 
-    public AuthorService(DbConnection dbConnection) {
+    public AuthorService(DbConnection dbConnection,AuthorDao dao) {
         this.dbConnection = dbConnection;
-        this.authorDao = new AuthorDao();
+        this.authorDao = dao;
     }
 
     public Author add(Author author) throws FieldRequiredException, FieldUniqueException {
