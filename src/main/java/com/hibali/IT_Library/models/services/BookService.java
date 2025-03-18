@@ -23,7 +23,7 @@ public class BookService implements IService<Book,Integer> {
         this.dao = dao;
     }
 
-    public Optional<Book> add(Book book) throws FieldRequiredException, FieldUniqueException, BuisnessRulesException {
+    public Optional<Book> add(Book book) throws FieldUniqueException, FieldRequiredException, BuisnessRulesException, SQLException {
         if (book.getName() == null || book.getAuthorId() <= 0 || book.getFileUrI() == null) {
             throw new FieldRequiredException(new String[] { "book_name", "author_id", "book_file_url" });
         }
@@ -31,7 +31,7 @@ public class BookService implements IService<Book,Integer> {
             try {
                 checkEdition(book, cnx);
             } catch (BuisnessRulesException e) {
-                e.printStackTrace();
+                throw e;
             }
             dao.insert(book, cnx);
             TransactionsResultsMessages.insertSuccess(book);
@@ -39,26 +39,20 @@ public class BookService implements IService<Book,Integer> {
         }, dbConnection);
     }
 
-    public ArrayList<Book> getAll() {
+    public ArrayList<Book> getAll() throws SQLException {
         try (Connection cnx = dbConnection.create()) {
             return dao.findAll(cnx);
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return new ArrayList<>();
     }
 
-    public Optional<Book> getById(Integer id) {
+    public Optional<Book> getById(Integer id) throws SQLException {
         try (Connection cnx = dbConnection.create()) {
             return dao.findById(id, cnx);
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return Optional.empty();
     }
 
     public Optional<Book> update(Book book)
-            throws FieldUniqueException, FieldRequiredException, BuisnessRulesException {
+            throws FieldUniqueException, FieldRequiredException, BuisnessRulesException, SQLException {
         if (book.getId() <= 0) {
             throw new FieldRequiredException("book_id");
         }
@@ -66,7 +60,7 @@ public class BookService implements IService<Book,Integer> {
             try {
                 checkEdition(book, cnx);
             } catch (BuisnessRulesException e) {
-                e.printStackTrace();
+                throw e;
             }
             dao.update(book, cnx);
             TransactionsResultsMessages.updateSuccess(book);
@@ -75,7 +69,7 @@ public class BookService implements IService<Book,Integer> {
 
     }
 
-    public Optional<Book> delete(Book book) throws FieldRequiredException {
+    public Optional<Book> delete(Book book) throws FieldUniqueException, FieldRequiredException, BuisnessRulesException, SQLException {
         if (book.getId() <= 0) {
             throw new FieldRequiredException("book_id");
         }

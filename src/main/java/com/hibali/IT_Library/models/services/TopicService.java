@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import com.hibali.IT_Library.customExceptions.BuisnessRulesException;
 import com.hibali.IT_Library.customExceptions.FieldRequiredException;
 import com.hibali.IT_Library.customExceptions.FieldUniqueException;
 import com.hibali.IT_Library.models.Dao.TopicDao;
@@ -23,7 +24,8 @@ public class TopicService implements IService<Topic, Integer> {
         this.topicDao = dao;
     }
 
-    public Optional<Topic> add(Topic topic) throws FieldRequiredException, FieldUniqueException {
+    public Optional<Topic> add(Topic topic)
+            throws FieldUniqueException, FieldRequiredException, BuisnessRulesException, SQLException {
         if (topic.getName() == null) {
             throw new FieldRequiredException("topic_name");
         }
@@ -34,25 +36,20 @@ public class TopicService implements IService<Topic, Integer> {
         }, dbConnection);
     }
 
-    public ArrayList<Topic> getAll() {
+    public ArrayList<Topic> getAll() throws SQLException {
         try (Connection cnx = dbConnection.create()) {
             return topicDao.findAll(cnx);
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return new ArrayList<>();
     }
 
-    public Optional<Topic> getById(Integer id) {
+    public Optional<Topic> getById(Integer id) throws SQLException {
         try (Connection cnx = this.dbConnection.create()) {
             return topicDao.findById(id, cnx);
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return Optional.empty();
     }
 
-    public Optional<Topic> update(Topic topic) throws FieldUniqueException, FieldRequiredException {
+    public Optional<Topic> update(Topic topic)
+            throws FieldUniqueException, FieldRequiredException, BuisnessRulesException, SQLException {
         if (topic.getId() <= 0) {
             throw new FieldRequiredException("topic_id");
         }
@@ -63,14 +60,15 @@ public class TopicService implements IService<Topic, Integer> {
         }, dbConnection);
     }
 
-    public Optional<Topic> delete(Topic topic) throws FieldRequiredException {
+    public Optional<Topic> delete(Topic topic)
+            throws FieldUniqueException, FieldRequiredException, BuisnessRulesException, SQLException {
         if (topic.getId() <= 0) {
             throw new FieldRequiredException("topic_id");
         }
-        return ExecuteInTransaction.execute(cnx->{
+        return ExecuteInTransaction.execute(cnx -> {
             topicDao.delete(topic, cnx);
             TransactionsResultsMessages.deleteSuccess(topic);
-                return topic;
+            return topic;
         }, dbConnection);
     }
 }

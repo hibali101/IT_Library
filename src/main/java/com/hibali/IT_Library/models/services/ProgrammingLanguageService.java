@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import com.hibali.IT_Library.customExceptions.BuisnessRulesException;
 import com.hibali.IT_Library.customExceptions.FieldRequiredException;
 import com.hibali.IT_Library.customExceptions.FieldUniqueException;
 import com.hibali.IT_Library.models.Dao.ProgrammingLanguageDao;
@@ -26,7 +27,7 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
     // adding new programming language
     @Override
     public Optional<ProgrammingLanguage> add(ProgrammingLanguage progsLanguage)
-            throws FieldRequiredException, FieldUniqueException {
+            throws FieldUniqueException, FieldRequiredException, BuisnessRulesException, SQLException {
         if (progsLanguage.getName() == null) {
             throw new FieldRequiredException("progsLanguage");
         }
@@ -38,29 +39,23 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
     }
 
     /// get all programming language
-    public ArrayList<ProgrammingLanguage> getAll() {
+    public ArrayList<ProgrammingLanguage> getAll() throws SQLException {
         try (Connection cnx = dbConnection.create()) {
-            dao.findAll(cnx);
-        } catch (SQLException e) {
-            e.printStackTrace();
+            return dao.findAll(cnx);
         }
-        return new ArrayList<>();
     }
 
     /// get by id a programming language
 
-    public Optional<ProgrammingLanguage> getById(Integer id) {
+    public Optional<ProgrammingLanguage> getById(Integer id) throws SQLException {
         try (Connection cnx = this.dbConnection.create()) {
             return dao.findById(id, cnx);
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return Optional.empty();
     }
 
     /// upate a programming language
     public Optional<ProgrammingLanguage> update(ProgrammingLanguage programmingLanguage)
-            throws FieldUniqueException, FieldRequiredException {
+            throws FieldUniqueException, FieldRequiredException, BuisnessRulesException, SQLException {
         if (programmingLanguage.getId() <= 0) {
             throw new FieldRequiredException("prog_lang_id");
         }
@@ -72,11 +67,12 @@ public class ProgrammingLanguageService implements IService<ProgrammingLanguage,
     }
 
     // delete a programming language
-    public Optional<ProgrammingLanguage> delete(ProgrammingLanguage programmingLanguage) throws FieldRequiredException {
+    public Optional<ProgrammingLanguage> delete(ProgrammingLanguage programmingLanguage)
+            throws FieldUniqueException, FieldRequiredException, BuisnessRulesException, SQLException {
         if (programmingLanguage.getId() <= 0) {
             throw new FieldRequiredException("prog_lang_id");
         }
-        return ExecuteInTransaction.execute(cnx->{
+        return ExecuteInTransaction.execute(cnx -> {
             dao.delete(programmingLanguage, cnx);
             TransactionsResultsMessages.deleteSuccess(programmingLanguage);
             return programmingLanguage;
