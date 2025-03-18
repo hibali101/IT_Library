@@ -22,7 +22,7 @@ public class ProgrammingLanguageDao implements IDao<ProgrammingLanguage> {
     }
 
     @Override
-    public Optional<ArrayList<ProgrammingLanguage>> findAll(Connection cnx) throws SQLException {
+    public ArrayList<ProgrammingLanguage> findAll(Connection cnx) throws SQLException {
         ArrayList<ProgrammingLanguage> programmingLanguages = new ArrayList<>();
         String query = "select * from prog_langs where prog_lang_deleted = 0";
         try (PreparedStatement ps = cnx.prepareStatement(query); ResultSet result = ps.executeQuery()) {
@@ -30,7 +30,7 @@ public class ProgrammingLanguageDao implements IDao<ProgrammingLanguage> {
                 programmingLanguages.add(ResultSetMaper.mapToModel(result, ProgrammingLanguage.class));
             }
         }
-        return Optional.ofNullable(programmingLanguages);
+        return programmingLanguages;
     }
 
     @Override

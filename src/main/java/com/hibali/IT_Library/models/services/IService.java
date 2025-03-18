@@ -12,7 +12,7 @@ public interface IService<Model, IDType> {
 
     Optional<Model> add(Model model) throws FieldRequiredException, FieldUniqueException, BuisnessRulesException;
 
-    Optional<ArrayList<Model>> getAll();
+    ArrayList<Model> getAll();
 
     Optional<Model> getById(IDType id);
 

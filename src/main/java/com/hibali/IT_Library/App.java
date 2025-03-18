@@ -9,6 +9,7 @@ import com.hibali.IT_Library.customExceptions.FieldRequiredException;
 import com.hibali.IT_Library.customExceptions.FieldUniqueException;
 import com.hibali.IT_Library.enums.BookLanguages;
 import com.hibali.IT_Library.enums.BookStatus;
+import com.hibali.IT_Library.models.Dao.AuthorDao;
 import com.hibali.IT_Library.models.Dao.BookDao;
 import com.hibali.IT_Library.models.classes.Author;
 import com.hibali.IT_Library.models.classes.Book;
@@ -43,14 +44,8 @@ public class App {
          * }
          */
 
-        BookService bookService = new BookService(dbConnection,new BookDao());
-        Book book = new Book();
-        book.setId(19);
-        try {
-            bookService.delete(book);
-        } catch (FieldRequiredException e) {
-            System.out.println(e);
-        }
+        AuthorService service = new AuthorService(dbConnection, new AuthorDao());
+        service.getAll().forEach(System.out::println);
 
         // authors
         // AuthorService service = new AuthorService(dbConnection);

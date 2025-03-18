@@ -20,7 +20,7 @@ public class TopicDao implements IDao<Topic> {
         }
     }
 
-    public Optional<ArrayList<Topic>> findAll(Connection cnx) throws SQLException {
+    public ArrayList<Topic> findAll(Connection cnx) throws SQLException {
         ArrayList<Topic> topics = new ArrayList<>();
         String query = "select * from topics where topic_deleted = 0";
         try (PreparedStatement ps = cnx.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
@@ -28,7 +28,7 @@ public class TopicDao implements IDao<Topic> {
                 topics.add(ResultSetMaper.mapToModel(rs, Topic.class));
             }
         }
-        return Optional.ofNullable(topics);
+        return topics;
     }
 
     public Optional<Topic> findById(int id, Connection cnx) throws SQLException {

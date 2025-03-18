@@ -3,12 +3,14 @@ package com.hibali.IT_Library.models.services;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import com.hibali.IT_Library.customExceptions.FieldRequiredException;
 import com.hibali.IT_Library.customExceptions.FieldUniqueException;
 import com.hibali.IT_Library.models.Dao.AuthorDao;
 import com.hibali.IT_Library.models.classes.Author;
 import com.hibali.IT_Library.models.classes.DbConnection;
+import com.hibali.IT_Library.utilities.ExecuteInTransaction;
 import com.hibali.IT_Library.utilities.TransactionsResultsMessages;
 
 public class AuthorService implements IService<Author, Integer> {
@@ -20,29 +22,15 @@ public class AuthorService implements IService<Author, Integer> {
         this.authorDao = dao;
     }
 
-    public Author add(Author author) throws FieldRequiredException, FieldUniqueException {
-        if (author.getName() != null) {
-            try (Connection cnx = dbConnection.create()) {
-                cnx.setAutoCommit(false);
-                try {
-                    authorDao.insert(author, cnx);
-                    cnx.commit();
-                    TransactionsResultsMessages.insertSuccess(author);
-                    return author;
-                } catch (SQLException e) {
-                    cnx.rollback();
-                    if (e.getMessage().contains("UNIQUE")) {
-                        throw new FieldUniqueException("author_name");
-                    }
-                    e.printStackTrace();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } else {
+    public Optional<Author> add(Author author) throws FieldRequiredException, FieldUniqueException {
+        if (author.getName() == null){
             throw new FieldRequiredException("author_name");
         }
-        return null;
+        return ExecuteInTransaction.execute(cnx->{
+            authorDao.insert(author, cnx);
+            TransactionsResultsMessages.insertSuccess(author);
+            return author;
+        }, dbConnection);
     }
 
     public ArrayList<Author> getAll() {
@@ -54,57 +42,34 @@ public class AuthorService implements IService<Author, Integer> {
         return new ArrayList<>();
     }
 
-    public Author getById(Integer id) {
+    public Optional<Author> getById(Integer id) {
         try (Connection cnx = this.dbConnection.create()) {
             return authorDao.findById(id, cnx);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return Optional.empty();
     }
 
-    public Author update(Author author) throws FieldUniqueException, FieldRequiredException {
+    public Optional<Author> update(Author author) throws FieldUniqueException, FieldRequiredException {
         if (author.getId() <= 0) {
             throw new FieldRequiredException("author_id");
         }
-        try (Connection cnx = dbConnection.create()) {
-            cnx.setAutoCommit(false);
-            try{
-                authorDao.update(author, cnx);
-                cnx.commit();
-                TransactionsResultsMessages.updateSuccess(author);
-                return author;
-            } catch (SQLException e) {
-                cnx.rollback();
-                if (e.getMessage().contains("UNIQUE")) {
-                    throw new FieldUniqueException("topic_name");
-                }
-                e.printStackTrace();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return ExecuteInTransaction.execute(cnx->{
+            authorDao.update(author, cnx);
+            TransactionsResultsMessages.updateSuccess(author);
+            return author;
+        }, dbConnection);
     }
 
-    public Author delete(Author author) throws FieldRequiredException {
+    public Optional<Author> delete(Author author) throws FieldRequiredException {
         if (author.getId() <= 0) {
             throw new FieldRequiredException("author_id");
         }
-        try (Connection cnx = dbConnection.create()) {
-            cnx.setAutoCommit(false);
-            try {
-                authorDao.delete(author, cnx);
-                cnx.commit();
-                TransactionsResultsMessages.deleteSuccess(author);
+        return ExecuteInTransaction.execute(cnx -> {
+            authorDao.delete(author, cnx);
+            TransactionsResultsMessages.deleteSuccess(author);
                 return author;
-            } catch (SQLException e) {
-                cnx.rollback();
-                e.printStackTrace();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        }, dbConnection);
     }
 }

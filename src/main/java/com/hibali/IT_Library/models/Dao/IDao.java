@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface IDao<Model> {
     void insert(Model model, Connection cnx) throws SQLException;
 
-    Optional<ArrayList<Model>> findAll(Connection cnx) throws SQLException;
+    ArrayList<Model> findAll(Connection cnx) throws SQLException;
 
     Optional<Model> findById(int id, Connection cnx) throws SQLException;
 

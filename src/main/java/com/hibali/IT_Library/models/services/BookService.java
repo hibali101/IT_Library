@@ -39,13 +39,13 @@ public class BookService implements IService<Book,Integer> {
         }, dbConnection);
     }
 
-    public Optional<ArrayList<Book>> getAll() {
+    public ArrayList<Book> getAll() {
         try (Connection cnx = dbConnection.create()) {
             return dao.findAll(cnx);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return Optional.empty();
+        return new ArrayList<>();
     }
 
     public Optional<Book> getById(Integer id) {
@@ -54,7 +54,7 @@ public class BookService implements IService<Book,Integer> {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return Optional.empty();
     }
 
     public Optional<Book> update(Book book)

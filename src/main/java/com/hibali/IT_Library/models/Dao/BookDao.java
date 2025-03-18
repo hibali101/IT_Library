@@ -33,14 +33,14 @@ public class BookDao implements IDao<Book> {
 
     }
 
-    public Optional<ArrayList<Book>> findAll(Connection cnx) throws SQLException {
+    public ArrayList<Book> findAll(Connection cnx) throws SQLException {
         String query = "select * from books where book_deleted = 0";
         try (PreparedStatement ps = cnx.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
             ArrayList<Book> books = new ArrayList<>();
             while (rs.next()) {
                 books.add(ResultSetMaper.mapToModel(rs, Book.class));
             }
-            return Optional.ofNullable(books);
+            return books;
         }
     }
 

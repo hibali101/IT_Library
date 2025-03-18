@@ -21,7 +21,7 @@ public class AuthorDao implements IDao<Author> {
     }
 
     @Override
-    public Optional<ArrayList<Author>> findAll(Connection cnx) throws SQLException {
+    public ArrayList<Author> findAll(Connection cnx) throws SQLException {
         ArrayList<Author> authors = new ArrayList<>();
         String query = "select * from authors where author_deleted = 0";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
@@ -31,7 +31,7 @@ public class AuthorDao implements IDao<Author> {
                 }
             }
         }
-        return Optional.ofNullable(authors);
+        return authors;
     }
 
     @Override

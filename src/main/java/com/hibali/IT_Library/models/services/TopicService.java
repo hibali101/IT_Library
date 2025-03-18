@@ -3,12 +3,14 @@ package com.hibali.IT_Library.models.services;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import com.hibali.IT_Library.customExceptions.FieldRequiredException;
 import com.hibali.IT_Library.customExceptions.FieldUniqueException;
 import com.hibali.IT_Library.models.Dao.TopicDao;
 import com.hibali.IT_Library.models.classes.DbConnection;
 import com.hibali.IT_Library.models.classes.Topic;
+import com.hibali.IT_Library.utilities.ExecuteInTransaction;
 import com.hibali.IT_Library.utilities.TransactionsResultsMessages;
 
 public class TopicService implements IService<Topic, Integer> {
@@ -21,29 +23,15 @@ public class TopicService implements IService<Topic, Integer> {
         this.topicDao = dao;
     }
 
-    public Topic add(Topic topic) throws FieldRequiredException, FieldUniqueException {
-        if (topic.getName() != null) {
-            try (Connection cnx = dbConnection.create()) {
-                cnx.setAutoCommit(false);
-                try {
-                    topicDao.insert(topic, cnx);
-                    cnx.commit();
-                    TransactionsResultsMessages.insertSuccess(topic);
-                    return topic;
-                } catch (SQLException e) {
-                    cnx.rollback();
-                    if (e.getMessage().contains("UNIQUE")) {
-                        throw new FieldUniqueException("topic_name");
-                    }
-                    e.printStackTrace();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        } else {
+    public Optional<Topic> add(Topic topic) throws FieldRequiredException, FieldUniqueException {
+        if (topic.getName() == null) {
             throw new FieldRequiredException("topic_name");
         }
-        return null;
+        return ExecuteInTransaction.execute(cnx -> {
+            topicDao.insert(topic, cnx);
+            TransactionsResultsMessages.insertSuccess(topic);
+            return topic;
+        }, dbConnection);
     }
 
     public ArrayList<Topic> getAll() {
@@ -55,57 +43,34 @@ public class TopicService implements IService<Topic, Integer> {
         return new ArrayList<>();
     }
 
-    public Topic getById(Integer id) {
+    public Optional<Topic> getById(Integer id) {
         try (Connection cnx = this.dbConnection.create()) {
             return topicDao.findById(id, cnx);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return Optional.empty();
     }
 
-    public Topic update(Topic topic) throws FieldUniqueException, FieldRequiredException {
+    public Optional<Topic> update(Topic topic) throws FieldUniqueException, FieldRequiredException {
         if (topic.getId() <= 0) {
             throw new FieldRequiredException("topic_id");
         }
-        try (Connection cnx = dbConnection.create()) {
-            cnx.setAutoCommit(false);
-            try {
-                topicDao.update(topic, cnx);
-                cnx.commit();
-                TransactionsResultsMessages.updateSuccess(topic);
-                return topic;
-            } catch (SQLException e) {
-                cnx.rollback();
-                if (e.getMessage().contains("UNIQUE")) {
-                    throw new FieldUniqueException("topic_name");
-                }
-                e.printStackTrace();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return null;
+        return ExecuteInTransaction.execute(cnx -> {
+            topicDao.update(topic, cnx);
+            TransactionsResultsMessages.updateSuccess(topic);
+            return topic;
+        }, dbConnection);
     }
 
-    public Topic delete(Topic topic) throws FieldRequiredException {
+    public Optional<Topic> delete(Topic topic) throws FieldRequiredException {
         if (topic.getId() <= 0) {
             throw new FieldRequiredException("topic_id");
         }
-        try (Connection cnx = dbConnection.create()) {
-            cnx.setAutoCommit(false);
-            try {
-                topicDao.delete(topic, cnx);
-                cnx.commit();
-                TransactionsResultsMessages.deleteSuccess(topic);
+        return ExecuteInTransaction.execute(cnx->{
+            topicDao.delete(topic, cnx);
+            TransactionsResultsMessages.deleteSuccess(topic);
                 return topic;
-            } catch (SQLException e) {
-                cnx.rollback();
-                System.out.println(e.getMessage());
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        }, dbConnection);
     }
 }
