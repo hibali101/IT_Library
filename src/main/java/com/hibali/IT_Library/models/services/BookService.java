@@ -80,6 +80,9 @@ public class BookService implements IService<Book,Integer> {
         }, dbConnection);
     }
 
+    //custom validations
+    
+    //check Editions buisness logique lets go toab
     private void checkEdition(Book book, Connection cnx) throws BuisnessRulesException, SQLException {
         // check if a book with the same name exists, then it must have a recent edition
         ArrayList<Book> sameNameBooks = dao.findByName(book.getName(), cnx);

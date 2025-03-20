@@ -11,6 +11,7 @@ import com.hibali.IT_Library.models.classes.Topic;
 import com.hibali.IT_Library.utilities.ResultSetMaper;
 
 public class TopicDao implements IDao<Topic> {
+    
     public void insert(Topic topic, Connection cnx) throws SQLException {
         String query = "insert into topics (topic_name) values (?)";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {

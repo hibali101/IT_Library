@@ -45,7 +45,7 @@ public class BookDao implements IDao<Book> {
     }
 
     public Optional<Book> findById(int id, Connection cnx) throws SQLException {
-        String query = "select * from books where book_id=? and book_deleted=0";
+        String query = "select * from books where book_id = ? and book_deleted = 0";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -61,7 +61,7 @@ public class BookDao implements IDao<Book> {
         String query = "update books set author_id=?, book_name=?," +
                 " book_publish_date=?, book_description=?," +
                 "book_language=?, book_file_url=?," +
-                " book_edition=?, book_nbr_downloads=?, book_status=?, updated_at=GETDATE()";
+                " book_edition=?, book_nbr_downloads=?, book_status=?, updated_at=GETDATE() where book_id=?";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setInt(1, book.getAuthorId());
             ps.setString(2, book.getName());
@@ -72,6 +72,7 @@ public class BookDao implements IDao<Book> {
             ps.setInt(7, book.getEdition());
             ps.setInt(8, book.getNbrDownloads());
             ps.setString(9, book.getStatus().toString().toLowerCase());
+            ps.setInt(10, book.getId());
             ps.executeUpdate();
         }
     }

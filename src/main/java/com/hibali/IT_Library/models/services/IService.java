@@ -7,10 +7,11 @@ import java.util.Optional;
 import com.hibali.IT_Library.customExceptions.BuisnessRulesException;
 import com.hibali.IT_Library.customExceptions.FieldRequiredException;
 import com.hibali.IT_Library.customExceptions.FieldUniqueException;
+import com.hibali.IT_Library.customExceptions.HashingException;
 
 public interface IService<Model, IDType> {
 
-    Optional<Model> add(Model model) throws FieldRequiredException, FieldUniqueException, BuisnessRulesException, SQLException;
+    Optional<Model> add(Model model) throws FieldRequiredException, FieldUniqueException, BuisnessRulesException, SQLException, HashingException;
 
     ArrayList<Model> getAll() throws SQLException;
 

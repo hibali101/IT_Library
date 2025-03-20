@@ -6,6 +6,8 @@ import com.hibali.IT_Library.enums.BookLanguages;
 import com.hibali.IT_Library.enums.BookStatus;
 import com.hibali.IT_Library.models.classes.Author;
 import com.hibali.IT_Library.models.classes.Book;
+import com.hibali.IT_Library.models.classes.BookProgrammingLanguage;
+import com.hibali.IT_Library.models.classes.BookTopic;
 import com.hibali.IT_Library.models.classes.ProgrammingLanguage;
 import com.hibali.IT_Library.models.classes.Topic;
 
@@ -55,6 +57,22 @@ public class ResultSetMaper {
                 book.setdeleted(result.getBoolean("book_deleted"));
                 book.setCreated_at(result.getTimestamp("created_at"));
                 book.setUpdated_at(result.getTimestamp("updated_at"));
+            }
+            else if (model instanceof BookTopic){
+                BookTopic bookTopic = (BookTopic) model;
+                bookTopic.setId(result.getInt("book_topic_id"));
+                bookTopic.setBook_id(result.getInt("book_id"));
+                bookTopic.setTopic_id(result.getInt("topic_id"));
+                bookTopic.setCreated_at(result.getTimestamp("created_at"));
+                bookTopic.setUpdated_at(result.getTimestamp("updated_at"));
+            }
+            else if (model instanceof BookProgrammingLanguage){
+                BookProgrammingLanguage bookProgLang = (BookProgrammingLanguage) model;
+                bookProgLang.setId(result.getInt("book_prog_lang_id"));
+                bookProgLang.setBookId(result.getInt("book_id"));
+                bookProgLang.setProgrammingLanguageId(result.getInt("prog_lang_id"));
+                bookProgLang.setCreated_at(result.getTimestamp("created_at"));
+                bookProgLang.setUpdated_at(result.getTimestamp("updated_at"));
             }
             return model;
         } catch (Exception e) {

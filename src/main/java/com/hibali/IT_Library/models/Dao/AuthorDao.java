@@ -50,7 +50,8 @@ public class AuthorDao implements IDao<Author> {
 
     @Override
     public void update(Author author, Connection cnx) throws SQLException {
-        String query = "update authors set author_name = ?, author_link = ?, updated_at = GETDATE() where authors.author_id = ?";
+        String query = "update authors set author_name = ?, author_link = ?, " +
+                " updated_at = GETDATE() where authors.author_id = ?";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setString(1, author.getName());
             ps.setString(2, author.getLink());
