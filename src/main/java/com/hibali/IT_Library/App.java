@@ -4,7 +4,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Base64.Encoder;
 
 import javax.crypto.SecretKeyFactory;
@@ -21,6 +25,7 @@ import com.hibali.IT_Library.models.classes.DbConnection;
 import com.hibali.IT_Library.models.classes.User;
 import com.hibali.IT_Library.models.services.BookTopicService;
 import com.hibali.IT_Library.models.services.UserService;
+import com.hibali.IT_Library.utilities.QueryBuilder;
 
 /**
  * Hello world!
@@ -29,21 +34,48 @@ public class App {
 
     public static void main(String[] args) {
         DbConnection dbConnection = DbConnection.getDbConnection();
+        /*
+         * UserService service = new UserService(dbConnection, new UserDao());
+         * try {
+         * service.add(new User("hibadfsdzli", "f1ss234",
+         * "hichamelbachari.grh@gmail.com", "0626358233", true));
+         * } catch (FieldRequiredException e) {
+         * e.printStackTrace();
+         * } catch (FieldUniqueException e) {
+         * e.printStackTrace();
+         * } catch (BuisnessRulesException e) {
+         * e.printStackTrace();
+         * } catch (SQLException e) {
+         * e.printStackTrace();
+         * } catch (HashingException e) {
+         * e.printStackTrace();
+         * }
+         */
+
         UserService service = new UserService(dbConnection, new UserDao());
+        /* try {
+            service.add(new User("toabui", "f1ss234", "bikouranImane.grh@gmail.com", "0626358233", true));
+        } catch (FieldRequiredException | FieldUniqueException | BuisnessRulesException | SQLException
+                | HashingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } */
         try {
-            service.add(new User("hibadfsdzli", "f1ss234", "hichamelbachari.grh@gmail.com", "0626358233", true));
-        } catch (FieldRequiredException e) {
-            e.printStackTrace();
-        } catch (FieldUniqueException e) {
-            e.printStackTrace();
-        } catch (BuisnessRulesException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (HashingException e) {
+            System.out.println("before update");
+            System.out.println(service.getAll().toString());
+            System.out.println("after update");
+            Optional<User> userOptional = service.getById(8);
+            if(userOptional.isPresent()){
+                User user = userOptional.get();
+                user.setAdmin(false);
+                user.setPassword(null);
+                service.update(user);
+            }
+            System.out.println(service.getAll().toString());
+        } catch (SQLException | FieldUniqueException | FieldRequiredException | BuisnessRulesException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
         // books
         /*
          * 

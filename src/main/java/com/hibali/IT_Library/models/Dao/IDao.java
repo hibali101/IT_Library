@@ -12,7 +12,7 @@ public interface IDao<Model> {
 
     Optional<Model> findById(int id, Connection cnx) throws SQLException;
 
-    void update(Model model, Connection cnx) throws SQLException;
+    void update(Model model, Connection cnx) throws  SQLException;
 
     void delete(Model model, Connection cnx) throws SQLException;
 }

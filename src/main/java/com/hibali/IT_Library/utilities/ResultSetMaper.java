@@ -10,6 +10,7 @@ import com.hibali.IT_Library.models.classes.BookProgrammingLanguage;
 import com.hibali.IT_Library.models.classes.BookTopic;
 import com.hibali.IT_Library.models.classes.ProgrammingLanguage;
 import com.hibali.IT_Library.models.classes.Topic;
+import com.hibali.IT_Library.models.classes.User;
 
 public class ResultSetMaper {
 
@@ -24,16 +25,14 @@ public class ResultSetMaper {
                 topic.setdeleted(result.getBoolean("topic_deleted"));
                 topic.setCreated_at(result.getTimestamp("created_at"));
                 topic.setUpdated_at(result.getTimestamp("updated_at"));
-            }
-            else if (model instanceof ProgrammingLanguage) {
+            } else if (model instanceof ProgrammingLanguage) {
                 ProgrammingLanguage programmingLanguage = (ProgrammingLanguage) model;
                 programmingLanguage.setId(result.getInt("prog_lang_id"));
                 programmingLanguage.setName(result.getString("prog_lang_name"));
                 programmingLanguage.setdeleted(result.getBoolean("prog_lang_deleted"));
                 programmingLanguage.setCreated_at(result.getTimestamp("created_at"));
                 programmingLanguage.setUpdated_at(result.getTimestamp("updated_at"));
-            }
-            else if(model instanceof Author){
+            } else if (model instanceof Author) {
                 Author author = (Author) model;
                 author.setId(result.getInt("author_id"));
                 author.setName(result.getString("author_name"));
@@ -41,8 +40,7 @@ public class ResultSetMaper {
                 author.setdeleted(result.getBoolean("author_deleted"));
                 author.setCreated_at(result.getTimestamp("created_at"));
                 author.setUpdated_at(result.getTimestamp("updated_at"));
-            }
-            else if(model instanceof Book){
+            } else if (model instanceof Book) {
                 Book book = (Book) model;
                 book.setId(result.getInt("book_id"));
                 book.setAuthorId(result.getInt("author_id"));
@@ -57,22 +55,31 @@ public class ResultSetMaper {
                 book.setdeleted(result.getBoolean("book_deleted"));
                 book.setCreated_at(result.getTimestamp("created_at"));
                 book.setUpdated_at(result.getTimestamp("updated_at"));
-            }
-            else if (model instanceof BookTopic){
+            } else if (model instanceof BookTopic) {
                 BookTopic bookTopic = (BookTopic) model;
                 bookTopic.setId(result.getInt("book_topic_id"));
                 bookTopic.setBook_id(result.getInt("book_id"));
                 bookTopic.setTopic_id(result.getInt("topic_id"));
                 bookTopic.setCreated_at(result.getTimestamp("created_at"));
                 bookTopic.setUpdated_at(result.getTimestamp("updated_at"));
-            }
-            else if (model instanceof BookProgrammingLanguage){
+            } else if (model instanceof BookProgrammingLanguage) {
                 BookProgrammingLanguage bookProgLang = (BookProgrammingLanguage) model;
                 bookProgLang.setId(result.getInt("book_prog_lang_id"));
                 bookProgLang.setBookId(result.getInt("book_id"));
                 bookProgLang.setProgrammingLanguageId(result.getInt("prog_lang_id"));
                 bookProgLang.setCreated_at(result.getTimestamp("created_at"));
                 bookProgLang.setUpdated_at(result.getTimestamp("updated_at"));
+            } else if (model instanceof User) {
+                User user = (User) model;
+                user.setId(result.getInt("user_id"));
+                user.setName(result.getString("user_name"));
+                user.setPassword(result.getString("user_password"));
+                user.setEmail(result.getString("user_email"));
+                user.setPhone(result.getString("user_phone"));
+                user.setAdmin(result.getBoolean("user_is_admin"));
+                user.setdeleted(result.getBoolean("user_deleted"));
+                user.setCreated_at(result.getTimestamp("created_at"));
+                user.setUpdated_at(result.getTimestamp("updated_at"));
             }
             return model;
         } catch (Exception e) {

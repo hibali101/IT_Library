@@ -1,5 +1,6 @@
 package com.hibali.IT_Library.models.services;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -48,6 +49,20 @@ public class UserService implements IService<User, Integer> {
     }
 
     @Override
+    public ArrayList<User> getAll() throws SQLException {
+        try (Connection cnx = dbConnection.create()) {
+            return dao.findAll(cnx);
+        }
+    }
+
+    @Override
+    public Optional<User> getById(Integer id) throws SQLException {
+        try (Connection cnx = dbConnection.create()) {
+            return dao.findById(id, cnx);
+        }
+    }
+
+    @Override
     public Optional<User> delete(User user)
             throws FieldUniqueException, FieldRequiredException, BuisnessRulesException, SQLException {
         // TODO Auto-generated method stub
@@ -55,22 +70,16 @@ public class UserService implements IService<User, Integer> {
     }
 
     @Override
-    public ArrayList<User> getAll() throws SQLException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Optional<User> getById(Integer id) throws SQLException {
-        // TODO Auto-generated method stub
-        return Optional.empty();
-    }
-
-    @Override
     public Optional<User> update(User user)
             throws FieldUniqueException, FieldRequiredException, BuisnessRulesException, SQLException {
-        // TODO Auto-generated method stub
-        return Optional.empty();
+        if(user.getId() <= 0){
+            throw new FieldRequiredException("user_id");
+        }
+        return ExecuteInTransaction.execute(cnx -> {
+            dao.update(user, cnx);
+            TransactionsResultsMessages.updateSuccess(user);
+            return user;
+        }, dbConnection);
     }
 
     // utilities
