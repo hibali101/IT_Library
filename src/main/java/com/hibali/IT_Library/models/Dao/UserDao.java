@@ -17,7 +17,7 @@ import com.hibali.IT_Library.models.classes.User;
 import com.hibali.IT_Library.utilities.QueryBuilder;
 import com.hibali.IT_Library.utilities.ResultSetMaper;
 
-public class UserDao implements IDao<User> {
+public class UserDao implements IDao<User, Integer> {
 
     @Override
     public void insert(User user, Connection cnx) throws SQLException {
@@ -46,7 +46,7 @@ public class UserDao implements IDao<User> {
     }
 
     @Override
-    public Optional<User> findById(int id, Connection cnx) throws SQLException {
+    public Optional<User> findById(Integer id, Connection cnx) throws SQLException {
         String query = "select * from users where user_id = ? and user_deleted = 0";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setInt(1, id);
@@ -68,17 +68,10 @@ public class UserDao implements IDao<User> {
             for(int i = 0; i<values.size(); i++){
                 Object value = values.get(i);
                 int paramIndex = i+1;
-                if(value instanceof Integer){
-                    ps.setInt(paramIndex, (int) value);
-                }else if(value instanceof String){
-                    ps.setString(paramIndex, String.valueOf(value));
-                }else if(value instanceof Timestamp){
-                    ps.setTimestamp(paramIndex, (Timestamp) value);
-                }else if(value instanceof Date){
-                    ps.setDate(paramIndex, (Date) value);
-                }
+                QueryBuilder.setPreparedStatementValue(ps, paramIndex, value);
             }
             ps.setInt( values.size()+1, user.getId());
+            ps.executeUpdate();
         }
     }
 

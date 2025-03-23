@@ -10,7 +10,7 @@ import java.util.Optional;
 import com.hibali.IT_Library.models.classes.BookProgrammingLanguage;
 import com.hibali.IT_Library.utilities.ResultSetMaper;
 
-public class BookProgrammingLanguageDao implements IDao<BookProgrammingLanguage> {
+public class BookProgrammingLanguageDao implements IDao<BookProgrammingLanguage, Integer> {
 
     @Override
     public void insert(BookProgrammingLanguage bookProgrammingLanguage, Connection cnx) throws SQLException {
@@ -35,7 +35,7 @@ public class BookProgrammingLanguageDao implements IDao<BookProgrammingLanguage>
     }
 
     @Override
-    public Optional<BookProgrammingLanguage> findById(int id, Connection cnx) throws SQLException {
+    public Optional<BookProgrammingLanguage> findById(Integer id, Connection cnx) throws SQLException {
         String query = "select * from books_prog_langs where book_prog_lang_id = ?";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setInt(1, id);

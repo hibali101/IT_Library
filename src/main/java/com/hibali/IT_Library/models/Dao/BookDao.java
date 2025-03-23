@@ -10,7 +10,7 @@ import java.util.Optional;
 import com.hibali.IT_Library.models.classes.Book;
 import com.hibali.IT_Library.utilities.ResultSetMaper;
 
-public class BookDao implements IDao<Book> {
+public class BookDao implements IDao<Book, Integer> {
 
     public void insert(Book book, Connection cnx) throws SQLException {
         // didnt insert number of downloads
@@ -44,7 +44,7 @@ public class BookDao implements IDao<Book> {
         }
     }
 
-    public Optional<Book> findById(int id, Connection cnx) throws SQLException {
+    public Optional<Book> findById(Integer id, Connection cnx) throws SQLException {
         String query = "select * from books where book_id = ? and book_deleted = 0";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setInt(1, id);

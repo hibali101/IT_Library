@@ -10,7 +10,7 @@ import java.util.Optional;
 import com.hibali.IT_Library.models.classes.Topic;
 import com.hibali.IT_Library.utilities.ResultSetMaper;
 
-public class TopicDao implements IDao<Topic> {
+public class TopicDao implements IDao<Topic, Integer> {
     
     public void insert(Topic topic, Connection cnx) throws SQLException {
         String query = "insert into topics (topic_name) values (?)";
@@ -31,7 +31,7 @@ public class TopicDao implements IDao<Topic> {
         return topics;
     }
 
-    public Optional<Topic> findById(int id, Connection cnx) throws SQLException {
+    public Optional<Topic> findById(Integer id, Connection cnx) throws SQLException {
         String query = "select * from topics where topic_id=? and topic_deleted = 0";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setInt(1, id);

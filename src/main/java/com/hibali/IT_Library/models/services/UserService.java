@@ -37,12 +37,12 @@ public class UserService implements IService<User, Integer> {
         if (hashedPassword == null) {
             throw new HashingException("user_password");
         }
-        // storing original password before hashing to restore it after insertion
-        String oldPassword = user.getPassword();
+        // storing original password before hashing to restore it after insertion (for returned string purposes)
+        String noHashPassword = user.getPassword();
         user.setPassword(hashedPassword);
         return ExecuteInTransaction.execute(cnx -> {
             dao.insert(user, cnx);
-            user.setPassword(oldPassword);
+            user.setPassword(noHashPassword);
             TransactionsResultsMessages.insertSuccess(user);
             return user;
         }, dbConnection);
@@ -75,14 +75,19 @@ public class UserService implements IService<User, Integer> {
         if(user.getId() <= 0){
             throw new FieldRequiredException("user_id");
         }
+        String noHashPassword = user.getPassword();
+        if(user.getPassword() != null){
+            String hashedPassword = HashPassword.hash(user.getPassword());
+            user.setPassword(hashedPassword);
+        }
         return ExecuteInTransaction.execute(cnx -> {
             dao.update(user, cnx);
+            user.setPassword(noHashPassword);
             TransactionsResultsMessages.updateSuccess(user);
             return user;
         }, dbConnection);
     }
 
-    // utilities
-    // hash user password
+    
 
 }

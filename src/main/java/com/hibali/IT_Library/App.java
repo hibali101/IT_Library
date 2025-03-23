@@ -64,11 +64,12 @@ public class App {
             System.out.println("before update");
             System.out.println(service.getAll().toString());
             System.out.println("after update");
-            Optional<User> userOptional = service.getById(8);
+            Optional<User> userOptional = service.getById(10);
             if(userOptional.isPresent()){
                 User user = userOptional.get();
-                user.setAdmin(false);
+                user.setEmail("the newest email sever");
                 user.setPassword(null);
+                user.setName(null);
                 service.update(user);
             }
             System.out.println(service.getAll().toString());

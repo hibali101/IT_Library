@@ -10,7 +10,7 @@ import java.util.Optional;
 import com.hibali.IT_Library.models.classes.BookTopic;
 import com.hibali.IT_Library.utilities.ResultSetMaper;
 
-public class BookTopicDao implements IDao<BookTopic> {
+public class BookTopicDao implements IDao<BookTopic, Integer> {
 
     @Override
     public void insert(BookTopic bookTopic, Connection cnx) throws SQLException {
@@ -35,7 +35,7 @@ public class BookTopicDao implements IDao<BookTopic> {
     }
 
     @Override
-    public Optional<BookTopic> findById(int id, Connection cnx) throws SQLException {
+    public Optional<BookTopic> findById(Integer id, Connection cnx) throws SQLException {
         String query = "select * from books_topics where book_topic_id = ?";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setInt(1, id);

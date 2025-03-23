@@ -10,7 +10,7 @@ import java.util.Optional;
 import com.hibali.IT_Library.models.classes.Author;
 import com.hibali.IT_Library.utilities.ResultSetMaper;
 
-public class AuthorDao implements IDao<Author> {
+public class AuthorDao implements IDao<Author,Integer> {
     public void insert(Author author, Connection cnx) throws SQLException {
         String query = "insert into authors (author_name, author_link) values (?,?)";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
@@ -35,7 +35,7 @@ public class AuthorDao implements IDao<Author> {
     }
 
     @Override
-    public Optional<Author> findById(int id, Connection cnx) throws SQLException {
+    public Optional<Author> findById(Integer id, Connection cnx) throws SQLException {
         String query = "select * from authors where author_id=? and author_deleted = 0";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setInt(1, id);

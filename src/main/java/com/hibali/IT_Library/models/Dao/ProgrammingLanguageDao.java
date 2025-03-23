@@ -10,7 +10,7 @@ import java.util.Optional;
 import com.hibali.IT_Library.models.classes.ProgrammingLanguage;
 import com.hibali.IT_Library.utilities.ResultSetMaper;
 
-public class ProgrammingLanguageDao implements IDao<ProgrammingLanguage> {
+public class ProgrammingLanguageDao implements IDao<ProgrammingLanguage, Integer> {
 
     @Override
     public void insert(ProgrammingLanguage proglanguage, Connection cnx) throws SQLException {
@@ -34,7 +34,7 @@ public class ProgrammingLanguageDao implements IDao<ProgrammingLanguage> {
     }
 
     @Override
-    public Optional<ProgrammingLanguage> findById(int id, Connection cnx) throws SQLException {
+    public Optional<ProgrammingLanguage> findById(Integer id, Connection cnx) throws SQLException {
         String query = "select * from prog_langs where prog_lang_id=? and prog_lang_deleted = 0";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setInt(1, id);

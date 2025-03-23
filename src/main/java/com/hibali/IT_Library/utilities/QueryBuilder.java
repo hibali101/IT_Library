@@ -1,6 +1,10 @@
 package com.hibali.IT_Library.utilities;
 
 import java.lang.reflect.Field;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,7 +73,7 @@ public final class QueryBuilder {
 
             }
         }
-        //adding the updated at logique also (i forgot this one)
+        // adding the updated at logique also (i forgot this one)
         query.append(" updated_at = GETDATE()");
         // adding the condition to update in where the id is equal to the object id
         query.append(" where ").append(map.get("id")).append(" = ? ");
@@ -78,5 +82,21 @@ public final class QueryBuilder {
         }
         // abstractMap is a class used to create simple Map.Entry
         return new AbstractMap.SimpleEntry<>(query.toString(), values);
+    }
+
+    // this method accept a prepared Statement and a list of object, it checks these
+    // object type and set the prepared statement poperties accordinelly
+    public static void setPreparedStatementValue(PreparedStatement ps, int paramIndex, Object value) throws SQLException {
+        if (value instanceof Integer) {
+            ps.setInt(paramIndex, (int) value);
+        } else if (value instanceof String) {
+            ps.setString(paramIndex, String.valueOf(value));
+        } else if (value instanceof Timestamp) {
+            ps.setTimestamp(paramIndex, (Timestamp) value);
+        } else if (value instanceof Date) {
+            ps.setDate(paramIndex, (Date) value);
+        } else if (value instanceof Boolean) {
+            ps.setBoolean(paramIndex, (Boolean) value);
+        }
     }
 }

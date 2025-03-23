@@ -8,7 +8,10 @@ import com.hibali.IT_Library.models.classes.Author;
 import com.hibali.IT_Library.models.classes.Book;
 import com.hibali.IT_Library.models.classes.BookProgrammingLanguage;
 import com.hibali.IT_Library.models.classes.BookTopic;
+import com.hibali.IT_Library.models.classes.Comment;
+import com.hibali.IT_Library.models.classes.CompositeKey;
 import com.hibali.IT_Library.models.classes.ProgrammingLanguage;
+import com.hibali.IT_Library.models.classes.Rating;
 import com.hibali.IT_Library.models.classes.Topic;
 import com.hibali.IT_Library.models.classes.User;
 
@@ -80,6 +83,25 @@ public class ResultSetMaper {
                 user.setdeleted(result.getBoolean("user_deleted"));
                 user.setCreated_at(result.getTimestamp("created_at"));
                 user.setUpdated_at(result.getTimestamp("updated_at"));
+            } else if (model instanceof Comment){
+                Comment comment = (Comment) model;
+                comment.setId(result.getInt("comment_id"));
+                comment.setUserId(result.getInt("user_id"));
+                comment.setBookId(result.getInt("book_id"));
+                comment.setText(result.getString("comment_text"));
+                comment.setdeleted(result.getBoolean("comment_deleted"));
+                comment.setCreated_at(result.getTimestamp("created_at"));
+                comment.setUpdated_at(result.getTimestamp("updated_at"));
+            } else if(model instanceof Rating){
+                Rating rating = (Rating) model;
+                CompositeKey id = new CompositeKey(result.getInt("user_id"),result.getInt("book_id"));
+                rating.setId(id);
+                rating.setUserId(result.getInt("user_id"));
+                rating.setBookId(result.getInt("book_id"));
+                rating.setScore(result.getInt("rating_score"));
+                rating.setdeleted(result.getBoolean("rating_deleted"));
+                rating.setCreated_at(result.getTimestamp("created_at"));
+                rating.setUpdated_at(result.getTimestamp("updated_at"));
             }
             return model;
         } catch (Exception e) {
