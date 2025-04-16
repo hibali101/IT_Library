@@ -75,6 +75,7 @@ public class App {
             System.out.println(service.getAll().toString());
         } catch (SQLException | FieldUniqueException | FieldRequiredException | BuisnessRulesException e) {
             // TODO Auto-generated catch block
+            
             e.printStackTrace();
         }
         // books
