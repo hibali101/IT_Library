@@ -47,7 +47,7 @@ public class LibLogger {
         }, message, properties);
     }
 
-    public static Optional<String> getFileName(LogLevel level) {
+    private static Optional<String> getFileName(LogLevel level) {
         Properties props = new Properties();
         Optional<String> folderName = Optional.empty();
         try {

@@ -1,0 +1,138 @@
+# Simple HTTP Server Class Structure Definition
+
+this server is a small project i will work on to develope my understanding of http, lets go hicham (fkhater lhcen galik lese9 smiytek finma l9iti lforssa)
+This document outlines the suggested class structure for a small HTTP server capable of serving static files and JSON data. The structure is designed to separate concerns and allow for easier extension compared to having all logic in a single handler class.
+
+## Core Server Components
+
+### 1. `HttpServer`
+
+* **Role:** The main entry point and listener for incoming connections.
+* **Responsibility:**
+    * Initializes the server socket on a specific port.
+    * Creates and manages a thread pool (`ExecutorService`) for handling concurrent connections.
+    * Runs the main server loop (`while(true)`) to accept new client connections (`serverSocket.accept()`).
+    * Creates a `ConnectionHandler` for each accepted socket and submits it to the thread pool.
+    * Holds a reference to the main `Router`.
+
+### 2. `ConnectionHandler`
+
+* **Role:** Handles the lifecycle and processing of a single client connection within a thread.
+* **Responsibility:**
+    * Takes an accepted `Socket` and a `Router` instance in its constructor.
+    * Runs in a separate thread (implements `Callable<Void>` or `Runnable`).
+    * Retrieves the input and output streams from the socket.
+    * Uses an `HttpRequestParser` to read and parse the incoming request stream into an `HttpRequest` object.
+    * Passes the `HttpRequest` object to the `Router` to get the appropriate `HttpResponse`.
+    * Uses a `ResponseWriter` (or inline logic) to format and write the `HttpResponse` (status line, headers, body) back to the client via the output stream.
+    * Manages stream and socket closing, ensuring resources are released even if errors occur (using `try-finally` or `try-with-resources`).
+    * Catches exceptions during parsing, routing, or writing and generates appropriate HTTP error responses (e.g., 400, 500).
+
+### 3. `HttpRequest`
+
+* **Role:** A simple data container representing a parsed HTTP request.
+* **Responsibility:**
+    * Holds all relevant information extracted from the incoming request stream.
+* **Key Properties:**
+    * `method` (e.g., "GET", "POST")
+    * `resourcePath` (e.g., "/", "/index.html", "/api/data")
+    * `httpVersion` (e.g., "HTTP/1.1")
+    * `headers` (Map of header names to values)
+    * `requestBody` (Byte array or input stream for POST/PUT data)
+
+### 4. `HttpRequestParser`
+
+* **Role:** Parses the raw input stream from a socket into an `HttpRequest` object.
+* **Responsibility:**
+    * Takes an `InputStream` in its constructor or a parsing method.
+    * Reads the input stream line by line to extract the status line (method, path, version).
+    * Reads subsequent lines to extract request headers into a Map.
+    * Reads the request body if headers like `Content-Length` or `Transfer-Encoding` indicate one is present.
+    * Handles parsing errors (e.g., malformed request line or headers) by throwing custom exceptions (like your `InvalidHttpHeaderException`).
+    * Returns a populated `HttpRequest` object.
+
+### 5. `HttpResponse`
+
+* **Role:** A simple data container representing an HTTP response to be sent back to the client.
+* **Responsibility:**
+    * Holds all necessary information for building the response message.
+    * Designed to be populated by `RequestHandlers`.
+* **Key Properties:**
+    * `statusCode` (e.g., 200, 404, 500)
+    * `statusMessage` (e.g., "OK", "Not Found", "Internal Server Error")
+    * `headers` (Map of header names to values, including `Content-Type`, `Content-Length`, etc.)
+    * `body` (Byte array for smaller bodies, or an `InputStream` with length for large bodies like files)
+
+### 6. `ResponseWriter` (Can be part of `ConnectionHandler`)
+
+* **Role:** Formats and writes an `HttpResponse` object to an `OutputStream`.
+* **Responsibility:**
+    * Takes an `OutputStream` and an `HttpResponse` object.
+    * Writes the HTTP status line (`HTTP/1.1 <statusCode> <statusMessage>\r\n`).
+    * Writes each header (`Header-Name: Header-Value\r\n`).
+    * Writes the blank line (`\r\n`) to separate headers and body.
+    * Writes the bytes of the response body.
+    * Ensures streams are flushed to send data over the network.
+
+## Request Handling Components (Router & Handlers)
+
+### 7. `Router` / `Dispatcher`
+
+* **Role:** The central component responsible for selecting the correct handler for a given request.
+* **Responsibility:**
+    * Maintains a registry (e.g., a Map) mapping request criteria (like method + path pattern) to `RequestHandler` instances.
+    * Takes an `HttpRequest` object.
+    * Based on the request's method and path, it looks up the corresponding `RequestHandler`.
+    * Invokes the selected `RequestHandler`'s `handle` method.
+    * If no matching handler is found, it generates a 404 Not Found `HttpResponse`.
+    * Can also handle cases like 405 Method Not Allowed if a path matches but not the method.
+    * Returns the generated `HttpResponse`.
+
+### 8. `RequestHandler` (Interface)
+
+* **Role:** Defines the contract for any class that knows how to process a specific type of HTTP request and generate a response. (This is the **Strategy Pattern**).
+* **Responsibility:**
+    * Declares a method for handling a request and returning a response.
+* **Key Method:**
+    * `HttpResponse handle(HttpRequest request)`
+
+### 9. `StaticFileHandler`
+
+* **Role:** A concrete implementation of `RequestHandler` specifically for serving static files.
+* **Responsibility:**
+    * Configured with a root directory on the file system.
+    * Implements the `RequestHandler` interface.
+    * In its `handle` method:
+        * Maps the requested `resourcePath` from the `HttpRequest` to a file path within its configured root directory.
+        * Checks if the file exists and is accessible.
+        * Determines the correct `Content-Type` based on the file extension (e.g., ".html" -> "text/html", ".png" -> "image/png").
+        * Reads the file content.
+        * Creates and returns a `HttpResponse` (200 OK with `Content-Type`, `Content-Length`, and file body; 404 Not Found if file not found; 403 Forbidden if access denied; 500 Internal Server Error if reading fails).
+
+### 10. `JsonEndpointHandler` (Example Specific Handler)
+
+* **Role:** A concrete implementation of `RequestHandler` for serving dynamic JSON data, potentially for a specific API endpoint.
+* **Responsibility:**
+    * Implements the `RequestHandler` interface.
+    * In its `handle` method:
+        * Performs application logic based on the `HttpRequest` (e.g., method, path, query parameters, request body).
+        * Generates data (e.g., fetching from a database, performing a calculation).
+        * Serializes the data into a JSON format (using a library like Jackson or Gson).
+        * Creates and returns a `HttpResponse` (200 OK with `Content-Type: application/json`, `Content-Length`, and the JSON body; potentially 400 Bad Request for invalid input, 500 Internal Server Error if logic fails).
+
+## Helper/Testing Components
+
+### 11. `ServerStarter`
+
+* **Role:** Contains the `main` method to configure and start the `HttpServer`.
+* **Responsibility:**
+    * Creates the `Router` instance and registers specific `RequestHandler` instances (`StaticFileHandler`, `JsonEndpointHandler`, etc.) with it.
+    * Creates the `HttpServer` instance, passing the configured `Router` to it.
+    * Calls `HttpServer.start()`.
+
+### 12. `ClientTester`
+
+* **Role:** A separate application to act as a client for testing the server.
+* **Responsibility:**
+    * Uses standard libraries (like `java.net.HttpURLConnection`) to send requests to the running server.
+    * Reads and prints the server's response.

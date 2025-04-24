@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class DbConnection {
-    private static DbConnection instance;
+    private static volatile DbConnection instance;
     private String connextionString;
     private String username;
     private String password;
@@ -39,8 +39,12 @@ public class DbConnection {
     }
 
     public static DbConnection getDbConnection(){
-        if(instance == null){
-            instance = new DbConnection();
+        if(instance == null){ //first check no lock
+            synchronized (DbConnection.class){
+                if(instance == null){ //second check with lock
+                    instance = new DbConnection();
+                }
+            }
         }
         return instance;
     }
