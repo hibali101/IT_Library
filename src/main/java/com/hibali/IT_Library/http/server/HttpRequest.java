@@ -37,8 +37,21 @@ public record HttpRequest(
         data = (data == null) ? null : data.clone();
     }
 
-    public String getHeader(String name) {
+    //getters 
+    public String getHeader(String name) { //get a signle header by name if exists
         return headers.get(name);
+    }
+    public String getRessourcePath(){
+        return this.resourcePath;
+    }
+    public String getHttpVersion(){
+        return this.httpVersion;
+    }
+    public Map<String,String> getHeaders(){
+        return this.headers;
+    }
+    public String getMethod(){
+        return this.method;
     }
 
     public String toString() {

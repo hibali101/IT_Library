@@ -34,10 +34,11 @@ public class ConnectionHandler implements Callable<Void> {
                 HttpRequestParser requestParser = new HttpRequestParser(in);
                 //HttpRequest is a holder class of the request (a record to be specific not a mere class)
                 HttpRequest request = requestParser.parse();
-                // we give the request to the router class to see how it should be router to a controller method
+                // we give the request to the router class to see how it should be routed to a controller method
                 //had ster ktebto mais mazal madert had lkhedma 
                 //how about giving the router class a data class routes that maps urls end points to controllers + specifique methods like laravel
                 //Router class should maybe to have a method that returns an HttpResponse to be send
+
                 HttpResponseFactory responseFactory = new HttpResponseFactory(out, 200, "OK");
                 responseFactory.stringResponse(request.toString());
             } catch (InvalidHttpRequestException e) {
