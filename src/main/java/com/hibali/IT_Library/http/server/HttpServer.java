@@ -5,26 +5,30 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.hibali.IT_Library.Application.ApplicationContext;
 import com.hibali.IT_Library.utilities.LibLogger;
 public final class HttpServer {
     //server configuration
     private static final LibLogger LOGGER = LibLogger.getSevereLogger();
-    public static final int PORT = 8080;
-    public static final int MAX_WAITING_QUEUE = 5000;
-    public static final int MAX_THREADS = 400;
+    private final ApplicationContext applicationContext;
+    private static final int PORT = 8080;
+    private static final int MAX_WAITING_QUEUE = 5000;
+    private static final int MAX_THREADS = 400;
     
     //private constructor so far
-    private HttpServer(){}
+    public HttpServer(ApplicationContext context){
+        this.applicationContext = context;
+    }
 
     //server start from this method
-    public static void start(){
+    public void start(){
         ExecutorService pool = Executors.newFixedThreadPool(MAX_THREADS);
         try(ServerSocket serverSocket = new ServerSocket(PORT, MAX_WAITING_QUEUE)){
             System.out.println("Server listening on "+serverSocket.getLocalSocketAddress());
             while(true){
                 try{
                     Socket connectionSocket = serverSocket.accept();
-                    ConnectionHandler handler = new ConnectionHandler(connectionSocket);
+                    ConnectionHandler handler = new ConnectionHandler(connectionSocket,this.applicationContext);
                     pool.submit(handler);
                 }catch(IOException e){
                     e.printStackTrace();

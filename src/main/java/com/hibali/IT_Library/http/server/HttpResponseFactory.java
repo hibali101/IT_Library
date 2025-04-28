@@ -4,7 +4,6 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
@@ -25,7 +24,6 @@ public class HttpResponseFactory {
         try {
             BufferedOutputStream bout = new BufferedOutputStream(this.outputStream);
             OutputStreamWriter out = new OutputStreamWriter(bout, StandardCharsets.UTF_8);
-            System.out.println("am here");
             out.write(HTTP_VERSION + " " + this.responseCode + " " + this.responseMessage + "\r\n");
             out.write("server: HichamServer\r\n");
             out.write("date: " + new Date().toString() + "\r\n");
@@ -45,7 +43,6 @@ public class HttpResponseFactory {
 
     public void stringResponse(String response) {
         byte[] data = response.getBytes(StandardCharsets.UTF_8);
-        System.out.println("content legnth is "+data.length);
         this.respond(data.length, "text/plain", data);
     }
 }

@@ -1,4 +1,4 @@
-package com.hibali.IT_Library;
+package com.hibali.IT_Library.Application;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -30,7 +30,7 @@ import com.hibali.IT_Library.utilities.QueryBuilder;
 /**
  * Hello world!
  */
-public class App {
+public class AppOld {
 
     public static void main(String[] args) {
         DbConnection dbConnection = DbConnection.getDbConnection();

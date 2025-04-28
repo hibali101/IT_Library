@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.hibali.IT_Library.AppTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.086 s <<< FAILURE! -- in com.hibali.IT_Library.AppTest
-com.hibali.IT_Library.AppTest.addition -- Time elapsed: 0.036 s <<< FAILURE!
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.151 s <<< FAILURE! -- in com.hibali.IT_Library.AppTest
+com.hibali.IT_Library.AppTest.addition -- Time elapsed: 0.063 s <<< FAILURE!
 org.opentest4j.AssertionFailedError: expected: <9> but was: <7>
 	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
 	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)

@@ -11,7 +11,7 @@ import java.net.URL;
 public class ClientTester {
     public static void main(String[] args) {
         try {
-            URL url = new URI("http://localhost:8080").toURL();
+            URL url = new URI("http://localhost:8080/books/12").toURL();
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             try(BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))){
                 String line;

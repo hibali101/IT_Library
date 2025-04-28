@@ -6,6 +6,8 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.concurrent.Callable;
 
+import com.hibali.IT_Library.Application.ApplicationContext;
+
 //this dude here (or class as they call it) is responsible for getting the input/output streams
 //from the socket then serve them to whowhever needs them, it is als responsible for closing 
 //the spocket when its done
@@ -19,9 +21,10 @@ import java.util.concurrent.Callable;
 /// this dude will close the connection and its done
 public class ConnectionHandler implements Callable<Void> {
     private final Socket socket;
-
-    public ConnectionHandler(Socket socket) {
+    private final ApplicationContext applicationContext;
+    public ConnectionHandler(Socket socket,ApplicationContext context) {
         this.socket = socket;
+        this.applicationContext = context;
     }
 
     public Void call() {
@@ -38,9 +41,10 @@ public class ConnectionHandler implements Callable<Void> {
                 //had ster ktebto mais mazal madert had lkhedma 
                 //how about giving the router class a data class routes that maps urls end points to controllers + specifique methods like laravel
                 //Router class should maybe to have a method that returns an HttpResponse to be send
+                Router router = new Router(request, applicationContext);
 
                 HttpResponseFactory responseFactory = new HttpResponseFactory(out, 200, "OK");
-                responseFactory.stringResponse(request.toString());
+                responseFactory.stringResponse(router.resolve());
             } catch (InvalidHttpRequestException e) {
                 e.printStackTrace();
             }

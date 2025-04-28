@@ -10,7 +10,7 @@ import com.hibali.IT_Library.controllers.BookController;
 public final class Routes {
     public static final Map<RouteKey,ControllerMethodIdentity> mapper = Map.of(
         new RouteKey("GET", "/books/{id}"), new ControllerMethodIdentity(BookController.class, "getById")
-    );
+    );// "/books/12"
 
     public static class RouteKey {
         private String method;

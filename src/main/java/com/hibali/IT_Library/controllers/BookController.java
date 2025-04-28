@@ -11,7 +11,7 @@ public class BookController extends BaseController {
     public BookController(BookService service){
         this.service = service;
     }
-    public String getById(int id){
+    public String getById(Integer id){
         String response = "no book found";
         try{
             Optional<Book> book = service.getById(id);
