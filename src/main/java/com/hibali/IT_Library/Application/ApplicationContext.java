@@ -6,7 +6,7 @@ import com.hibali.IT_Library.models.Dao.BookDao;
 import com.hibali.IT_Library.models.classes.DbConnection;
 import com.hibali.IT_Library.models.services.BookService;
 
-//this class here is responsible of creating the dependecies and provide apis to retreive them
+//this class here is responsible of creating the dependecies and provide methods to retreive these dependencies
 public class ApplicationContext {
     private DbConnection dbConnection;
     private BookDao bookDao;
