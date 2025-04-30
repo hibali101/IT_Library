@@ -5,14 +5,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+
+import com.hibali.IT_Library.http.server.exceptions.InvalidHttpResponseException;
 
 public record HttpResponse(String httpVersion, int responseCode,
         Map<String, String> headers, byte[] data) {
 
     // static final definition of supported httpversions, response codes, and
     // response messages
-    private static final List<String> SUPPORTED_HTTP_VERSIONS = List.of("HTTP/1.0", "HTTP/1.1");
+    public static final List<String> SUPPORTED_HTTP_VERSIONS = List.of("HTTP/1.0", "HTTP/1.1");
     // keeping it simple a si hicham (fkhater lehcen)
     private static final Map<Integer, String> SUPPORTED_RESPONSE_CODE_MESSAGES = Map.ofEntries(
             Map.entry(200, "OK"),
@@ -46,6 +47,18 @@ public record HttpResponse(String httpVersion, int responseCode,
     public String getResponseMessage() {
         return SUPPORTED_RESPONSE_CODE_MESSAGES.get(this.responseCode);
     }
+    public String getHttpVersion(){
+        return this.httpVersion;
+    }
+    public int getResponseCode(){
+        return this.responseCode;
+    }
+    public Map<String,String> getHeaders(){
+        return this.headers;
+    }
+    public byte[] getData(){
+        return this.data;
+    }
 
     // nested class to be called without intantiating the record xd fkhater lhcen
     // again
@@ -72,11 +85,7 @@ public record HttpResponse(String httpVersion, int responseCode,
 
         public HttpResponseBuilder defaultHeaders() {
             this.headers.put("server", "hichamserv");
-            this.headers.put("content-type", "application/json");
             this.headers.put("date", new Date().toString());
-            if (this.data != null && this.data.length > 0) {
-                this.headers.put("content-length", String.valueOf(this.data.length));
-            }
             return this;
         }
 

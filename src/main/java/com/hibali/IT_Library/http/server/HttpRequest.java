@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.hibali.IT_Library.http.server.exceptions.InvalidHttpRequestException;
+
 public record HttpRequest(
         String method,
         String resourcePath, // Renamed from ressourcePath for standard spelling

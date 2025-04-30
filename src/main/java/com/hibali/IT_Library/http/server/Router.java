@@ -12,6 +12,8 @@ import com.hibali.IT_Library.controllers.BaseController;
 import com.hibali.IT_Library.http.Routes;
 import com.hibali.IT_Library.http.Routes.ControllerMethodIdentity;
 import com.hibali.IT_Library.http.Routes.RouteKey;
+import com.hibali.IT_Library.http.server.exceptions.RouterException;
+import com.hibali.IT_Library.http.server.responses.BaseResponse;
 
 //this class is responsible for routing incoming request to controllers methods 
 //from which it gets the data to return as a response
@@ -24,7 +26,7 @@ public class Router {
         this.applicationContext = applicationContext;
     }
 
-    public String resolve() { // returns string for now
+    public BaseResponse resolve() { // returns string for now
         String path = this.httpRequest.getRessourcePath();
         String methodName = this.httpRequest.getMethod();
 
@@ -46,18 +48,19 @@ public class Router {
                 BaseController controller = applicationContext.getController(controllerClass);
                 try {
                     Object[] args = prepareMethodArguments(method, params.get());
-                    Object result = method.invoke(controller, args);
-                    if(result instanceof String){
-                        return (String) result;
+                    Object result = method.invoke(controller, args); //we call the controller method by passing the controller and the method's arguments
+                    if(result instanceof BaseResponse){
+                        return (BaseResponse) result;
+                    }else{
+                        throw new RouterException("the response type returned by the controller "+controller.getClass().getName()+
+                            " is not of the BaseResponse type!");
                     }
                 } catch (RouterException | IllegalAccessException | InvocationTargetException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
-
         }
-        return "hello";
+        return null; //fix after
     }
 
     // this method will retrieve an array of the arguments accepted by the
@@ -91,7 +94,7 @@ public class Router {
         return args;
     }
 
-    // this function will return a map that has keys as controller method
+    // this function will return a map that has keys as controller's methods
     // parametres names and value as the value of this parametre extracted from the
     // ressource path
     // if empty is returned means no match between the ressource path and the

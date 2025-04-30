@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 import com.hibali.IT_Library.http.server.HttpRequest.HttpRequestBuilder;
+import com.hibali.IT_Library.http.server.exceptions.InvalidHttpRequestException;
 
 public class HttpRequestParser {
     

@@ -12,6 +12,11 @@ public final class Routes {
         new RouteKey("GET", "/books/{id}"), new ControllerMethodIdentity(BookController.class, "getById")
     );// "/books/12"
 
+
+
+
+
+    
     public static class RouteKey {
         private String method;
         private String path;
@@ -33,7 +38,6 @@ public final class Routes {
         public int hashCode() {
             return Objects.hash(method,path);
         }
-
         @Override
         public boolean equals(Object obj) {
             if (this == obj)

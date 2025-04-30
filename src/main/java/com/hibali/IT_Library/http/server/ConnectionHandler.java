@@ -7,6 +7,10 @@ import java.net.Socket;
 import java.util.concurrent.Callable;
 
 import com.hibali.IT_Library.Application.ApplicationContext;
+import com.hibali.IT_Library.http.server.exceptions.InvalidHttpRequestException;
+import com.hibali.IT_Library.http.server.exceptions.InvalidHttpResponseException;
+import com.hibali.IT_Library.http.server.responses.BaseResponse;
+import com.hibali.IT_Library.http.server.responses.HttpResponseFactory;
 
 //this dude here (or class as they call it) is responsible for getting the input/output streams
 //from the socket then serve them to whowhever needs them, it is als responsible for closing 
@@ -42,10 +46,13 @@ public class ConnectionHandler implements Callable<Void> {
                 //how about giving the router class a data class routes that maps urls end points to controllers + specifique methods like laravel
                 //Router class should maybe to have a method that returns an HttpResponse to be send
                 Router router = new Router(request, applicationContext);
-
-                HttpResponseFactory responseFactory = new HttpResponseFactory(out, 200, "OK");
-                responseFactory.stringResponse(router.resolve());
-            } catch (InvalidHttpRequestException e) {
+                //router method will return a response (not http response, IResponse are returned but the underlying controller)
+                BaseResponse response = router.resolve();
+                HttpResponse httpResponse = HttpResponseFactory.fromResponse(response);
+                //instantiate the writer and write the response
+                HttpResponseWriter httpResponseWriter = new HttpResponseWriter(httpResponse, out);
+                httpResponseWriter.write();
+            } catch (InvalidHttpRequestException | InvalidHttpResponseException e) { //after fix this router.resolve should throws its exception and be cached here
                 e.printStackTrace();
             }
         } catch (IOException e) {

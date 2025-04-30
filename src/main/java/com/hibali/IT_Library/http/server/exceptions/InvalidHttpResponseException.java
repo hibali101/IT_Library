@@ -1,4 +1,4 @@
-package com.hibali.IT_Library.http.server;
+package com.hibali.IT_Library.http.server.exceptions;
 
 public class InvalidHttpResponseException extends Exception {
     public InvalidHttpResponseException(String message){
